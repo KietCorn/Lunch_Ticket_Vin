@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LunchCard – Sinh viên</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --primary: #2563eb; --primary-light: #eff6ff; --primary-dark: #1d4ed8;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --warning: #d97706; --warning-light: #fffbeb;
+    --danger: #dc2626;  --danger-light: #fef2f2;
+    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+    --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
+    --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937;
+    --radius: 12px; --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.1); --shadow-md: 0 4px 6px rgba(0,0,0,.07);
+  }
+
+  html, body { height: 100%; background: #f1f5f9; }
+
+  /* ── Phone wrapper (centered on desktop) ── */
+  .phone {
+    max-width: 430px; margin: 0 auto; height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--gray-50); position: relative; overflow: hidden;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; flex-direction: column; height: 100%; }
+  .screen.active { display: flex; }
+
+  /* ── Global error toast ── */
+  #global-error {
+    display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    background: var(--danger); color: white; padding: 10px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; z-index: 999; max-width: 360px; text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    background: var(--primary); color: white; display: flex;
+    justify-content: space-between; align-items: center;
+    padding: 10px 16px 8px; font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--primary); color: white; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  }
+  .topbar-title { font-size: 16px; font-weight: 600; flex: 1; }
+  .back-btn {
+    width: 28px; height: 28px; background: rgba(255,255,255,.2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; border: none; color: white;
+  }
+
+  /* ── Scrollable body ── */
+  .scroll-body { flex: 1; overflow-y: auto; }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    display: flex; border-top: 1px solid var(--gray-200);
+    background: white; flex-shrink: 0;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 10px 4px 12px; gap: 4px; font-size: 10px; font-weight: 500;
+    color: var(--gray-400); cursor: pointer; border: none; background: none;
+  }
+  .nav-item.active { color: var(--primary); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* ── Components ── */
+  .card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-success { background: var(--success-light); color: var(--success); }
+  .badge-warning { background: var(--warning-light); color: var(--warning); }
+  .badge-primary { background: var(--primary-light); color: var(--primary); }
+  .badge-danger  { background: var(--danger-light);  color: var(--danger); }
+  .badge-gray    { background: var(--gray-100);       color: var(--gray-600); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 11px 18px; border-radius: var(--radius-sm); font-size: 14px;
+    font-weight: 600; cursor: pointer; border: none; width: 100%;
+  }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-ghost   { background: var(--gray-100); color: var(--gray-700); }
+  .btn-sm { padding: 7px 14px; font-size: 12px; width: auto; }
+
+  input[type=text], input[type=password] {
+    width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    padding: 11px 14px; font-size: 14px; outline: none; color: var(--gray-800);
+  }
+  input:focus { border-color: var(--primary); }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+
+  /* ── 1. Login ── */
+  .login-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+    padding: 48px 24px 36px; text-align: center; color: white;
+  }
+  .login-hero .logo { font-size: 48px; margin-bottom: 10px; }
+  .login-hero h1   { font-size: 22px; font-weight: 700; }
+  .login-hero p    { font-size: 13px; opacity: .75; margin-top: 4px; }
+  .login-form { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── 2. Dashboard ── */
+  .balance-card {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+    color: white; padding: 20px; margin: 12px; border-radius: var(--radius);
+  }
+  .balance-label  { font-size: 11px; opacity: .8; font-weight: 500; }
+  .balance-amount { font-size: 30px; font-weight: 700; margin: 4px 0 2px; }
+  .balance-student{ font-size: 12px; opacity: .75; }
+  .quick-actions  {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; padding: 0 12px 12px;
+  }
+  .qa-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: white; border-radius: var(--radius-sm); padding: 12px 4px;
+    box-shadow: var(--shadow); cursor: pointer; font-size: 10px; font-weight: 600;
+    color: var(--gray-700); border: none;
+  }
+  .qa-icon { font-size: 22px; }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 12px 8px;
+  }
+  .section-title { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .section-link  { font-size: 12px; color: var(--primary); font-weight: 500; cursor: pointer; }
+  .order-item {
+    background: white; margin: 0 12px 8px; border-radius: var(--radius-sm);
+    padding: 12px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;
+    cursor: pointer;
+  }
+  .order-icon  { font-size: 28px; }
+  .order-info  { flex: 1; }
+  .order-name  { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .order-meta  { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .order-price { font-size: 13px; font-weight: 700; color: var(--primary); }
+
+  /* ── 3. Menu ── */
+  .time-tabs { display: flex; gap: 8px; padding: 12px; overflow-x: auto; }
+  .time-tab {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 99px; font-size: 12px;
+    font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200);
+    background: white; color: var(--gray-600);
+  }
+  .time-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .menu-item {
+    background: white; margin: 0 12px 10px; border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow); display: flex;
+  }
+  .menu-item.sold-out { opacity: .5; }
+  .menu-img {
+    width: 90px; height: 80px; background: var(--gray-100); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 32px;
+  }
+  .menu-info   { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .menu-name   { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .menu-desc   { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .menu-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .menu-price  { font-size: 14px; font-weight: 700; color: var(--primary); }
+  .add-btn {
+    width: 28px; height: 28px; background: var(--primary); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; flex-shrink: 0; border: none;
+  }
+  .add-btn.disabled { background: var(--gray-300); cursor: not-allowed; }
+
+  /* ── 4. Pre-order ── */
+  .step-indicator {
+    display: flex; align-items: center; padding: 14px 16px;
+    background: white; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+  }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .step-circle {
+    width: 28px; height: 28px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+    background: var(--gray-200); color: var(--gray-500);
+  }
+  .step-circle.done   { background: var(--success); color: white; }
+  .step-circle.active { background: var(--primary); color: white; }
+  .step-label        { font-size: 10px; color: var(--gray-500); }
+  .step-label.active { color: var(--primary); font-weight: 600; }
+  .step-line { flex: 1; height: 1px; background: var(--gray-200); margin: 0 4px; align-self: flex-start; margin-top: 14px; }
+  .step-line.done { background: var(--success); }
+  .time-slot-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 12px 16px; }
+  .time-slot {
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    padding: 10px 4px; text-align: center; cursor: pointer; background: white;
+  }
+  .time-slot.selected { border-color: var(--primary); background: var(--primary-light); }
+  .time-slot.full     { opacity: .45; cursor: not-allowed; background: var(--gray-50); }
+  .slot-time  { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .slot-avail { font-size: 10px; color: var(--gray-500); margin-top: 2px; }
+  .slot-avail.low       { color: var(--danger); }
+  .slot-avail.full-text { color: var(--gray-400); }
+
+  /* ── 5. QR ── */
+  .qr-box {
+    width: 180px; height: 180px; border: 3px solid var(--primary); border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 80px;
+    margin: 12px 0; background: var(--primary-light);
+  }
+  .qr-code-text { font-size: 22px; font-weight: 800; letter-spacing: .12em; color: var(--gray-800); }
+  .qr-expires   { font-size: 11px; color: var(--danger); font-weight: 600; margin-top: 4px; }
+  .summary-row  {
+    display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0;
+  }
+  .summary-row.total {
+    font-weight: 700; font-size: 14px; border-top: 1px solid var(--gray-200);
+    margin-top: 4px; padding-top: 8px;
+  }
+
+  /* ── 6. History ── */
+  .txn-item {
+    background: white; margin: 0 12px 8px; border-radius: var(--radius-sm);
+    padding: 12px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;
+  }
+  .txn-icon-wrap {
+    width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .txn-icon-wrap.credit { background: var(--success-light); }
+  .txn-icon-wrap.debit  { background: var(--primary-light); }
+  .txn-info   { flex: 1; }
+  .txn-name   { font-size: 13px; font-weight: 600; }
+  .txn-date   { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .txn-amount { font-size: 14px; font-weight: 700; }
+  .txn-amount.credit { color: var(--success); }
+  .txn-amount.debit  { color: var(--gray-800); }
+</style>
+</head>
+<body>
+<div id="global-error"></div>
+
+<div class="phone">
+
+  <!-- ══ 1. LOGIN ══ -->
+  <div id="screen-login" class="screen">
+    <div class="login-hero">
+      <div class="logo">🍱</div>
+      <h1>LunchCard SV</h1>
+      <p>Hệ thống thẻ ăn trưa sinh viên</p>
+    </div>
+    <form class="login-form" id="login-form">
+      <div>
+        <label>Tên đăng nhập</label>
+        <input type="text" id="login-username" value="staff1" autocomplete="username" />
+      </div>
+      <div>
+        <label>Mật khẩu</label>
+        <input type="password" id="login-password" value="staff123" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary" type="submit" id="login-btn">Đăng nhập</button>
+      <div style="text-align:center;font-size:11px;color:var(--gray-400);line-height:1.6;">
+        Demo pre-filled: staff1 / staff123<br>
+        <span style="color:#94a3b8;">(Student identity is fixed to MSSV 20110001 in this demo)</span>
+      </div>
+    </form>
+  </div>
+
+  <!-- ══ 2. DASHBOARD ══ -->
+  <div id="screen-dashboard" class="screen">
+    <div class="status-bar"><span>LunchCard</span><span>🔋</span></div>
+    <div class="topbar" style="justify-content:space-between;">
+      <div>
+        <div style="font-size:11px;opacity:.8;">Xin chào,</div>
+        <div style="font-size:16px;font-weight:700;" id="dash-name">—</div>
+      </div>
+      <div style="font-size:22px;">🔔</div>
+    </div>
+    <div class="scroll-body">
+      <div class="balance-card">
+        <div class="balance-label">Số dư tài khoản</div>
+        <div class="balance-amount" id="dash-balance">—</div>
+        <div class="balance-student" id="dash-mssv">—</div>
+      </div>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="loadMenu()"><span class="qa-icon">📋</span>Đặt trước</button>
+        <button class="qa-btn" onclick="loadHistory()"><span class="qa-icon">📜</span>Lịch sử</button>
+        <button class="qa-btn"><span class="qa-icon">📱</span>QR của tôi</button>
+        <button class="qa-btn"><span class="qa-icon">🔒</span>Báo mất thẻ</button>
+      </div>
+      <div class="section-header">
+        <span class="section-title">Đơn hôm nay</span>
+        <span class="section-link" onclick="loadHistory()">Xem tất cả →</span>
+      </div>
+      <div id="dash-active-order"></div>
+      <div class="section-header" style="margin-top:4px;">
+        <span class="section-title">Menu hôm nay</span>
+        <span class="section-link" onclick="loadMenu()">Xem thêm →</span>
+      </div>
+      <div id="dash-menu-preview"></div>
+      <div style="height:16px;"></div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="home"><span class="nav-icon">🏠</span>Trang chủ</button>
+      <button class="nav-item" data-tab="menu"><span class="nav-icon">🍽️</span>Menu</button>
+      <button class="nav-item" data-tab="orders"><span class="nav-icon">📋</span>Đơn của tôi</button>
+      <button class="nav-item" data-tab="account"><span class="nav-icon">👤</span>Tài khoản</button>
+    </nav>
+  </div>
+
+  <!-- ══ 3. MENU ══ -->
+  <div id="screen-menu" class="screen">
+    <div class="status-bar"><span>LunchCard</span><span>🔋</span></div>
+    <div class="topbar">
+      <div class="topbar-title">Menu hôm nay</div>
+    </div>
+    <div id="menu-timeslot-tabs" class="time-tabs"></div>
+    <div class="scroll-body">
+      <div id="menu-items"></div>
+      <div style="height:16px;"></div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" data-tab="home"><span class="nav-icon">🏠</span>Trang chủ</button>
+      <button class="nav-item active" data-tab="menu"><span class="nav-icon">🍽️</span>Menu</button>
+      <button class="nav-item" data-tab="orders"><span class="nav-icon">📋</span>Đơn của tôi</button>
+      <button class="nav-item" data-tab="account"><span class="nav-icon">👤</span>Tài khoản</button>
+    </nav>
+  </div>
+
+  <!-- ══ 4. PRE-ORDER ══ -->
+  <div id="screen-preorder" class="screen">
+    <div class="status-bar"><span>LunchCard</span><span>🔋</span></div>
+    <div class="topbar">
+      <button class="back-btn" onclick="loadMenu()">←</button>
+      <div class="topbar-title">Đặt món trước</div>
+    </div>
+    <div class="step-indicator" style="flex-shrink:0;">
+      <div class="step">
+        <div class="step-circle done">✓</div>
+        <div class="step-label">Chọn món</div>
+      </div>
+      <div class="step-line done"></div>
+      <div class="step">
+        <div class="step-circle active">2</div>
+        <div class="step-label active">Chọn giờ</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle">3</div>
+        <div class="step-label">Xác nhận</div>
+      </div>
+    </div>
+    <!-- Selected item -->
+    <div style="background:white;padding:12px 16px;border-bottom:1px solid var(--gray-200);display:flex;gap:12px;align-items:center;flex-shrink:0;">
+      <span style="font-size:28px;" id="po-item-emoji">🍜</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;" id="po-item-name">—</div>
+        <div style="font-size:12px;color:var(--gray-500);" id="po-item-desc">—</div>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--primary);" id="po-item-price">—</div>
+    </div>
+    <div class="scroll-body">
+      <div style="padding:14px 16px 4px;font-size:13px;font-weight:700;color:var(--gray-700);">Chọn khung giờ lấy đồ ăn</div>
+      <div id="po-timeslot-grid" class="time-slot-grid"></div>
+      <!-- Summary -->
+      <div style="margin:8px 12px;background:var(--primary-light);border-radius:var(--radius-sm);padding:12px;border:1px solid #bfdbfe;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;">
+          <span id="po-summary-item" style="color:var(--gray-600);">—</span>
+          <span id="po-summary-price" style="font-weight:600;">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;">
+          <span style="color:var(--gray-500);">Số dư hiện tại</span>
+          <span id="po-balance-before" style="color:var(--gray-600);">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:3px;">
+          <span style="color:var(--gray-500);">Số dư sau đặt</span>
+          <span id="po-balance-after" style="font-weight:600;">—</span>
+        </div>
+      </div>
+      <div style="padding:0 12px 16px;">
+        <button class="btn btn-primary" id="po-confirm-btn">Xác nhận đặt món →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 5. QR CONFIRMATION ══ -->
+  <div id="screen-qr" class="screen">
+    <div class="status-bar"><span>LunchCard</span><span>🔋</span></div>
+    <div class="topbar">
+      <button class="back-btn" id="qr-back-btn">←</button>
+      <div class="topbar-title">Đơn của tôi</div>
+    </div>
+    <div class="scroll-body" style="background:white;">
+      <div style="padding:16px 16px 8px;text-align:center;">
+        <span class="badge badge-warning" style="font-size:12px;padding:4px 12px;" id="qr-order-type">PRE-ORDER</span>
+        <span style="font-size:12px;color:var(--gray-500);margin-left:8px;" id="qr-timeslot">—</span>
+      </div>
+      <!-- QR display -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 24px 16px;border:1px solid var(--gray-200);margin:0 12px;border-radius:var(--radius);">
+        <div style="font-size:12px;color:var(--gray-500);margin-bottom:4px;">Xuất trình QR này tại quầy</div>
+        <div class="qr-box">▦</div>
+        <div class="qr-code-text" id="qr-token-display">—</div>
+        <div class="qr-expires" id="qr-expires"></div>
+      </div>
+      <!-- Order summary -->
+      <div style="margin:12px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">Chi tiết đơn</div>
+        <div class="card" style="padding:0 14px;">
+          <div class="summary-row"><span id="qr-item">—</span><span id="qr-amount">—</span></div>
+          <div class="summary-row" style="font-size:11px;color:var(--gray-500);">
+            <span>Khung giờ</span><span id="qr-slot">—</span>
+          </div>
+          <div class="summary-row" style="font-size:11px;color:var(--gray-500);">
+            <span>Mã đơn</span><span id="qr-order-id">—</span>
+          </div>
+          <div class="summary-row total">
+            <span>Tổng cộng</span><span style="color:var(--primary);" id="qr-total">—</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 12px 16px;display:flex;gap:8px;">
+        <button class="btn btn-outline" style="flex:1;font-size:13px;" id="qr-cancel-btn">Hủy đơn</button>
+        <button class="btn btn-primary" style="flex:2;font-size:13px;">📲 Lưu QR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 6. HISTORY ══ -->
+  <div id="screen-history" class="screen">
+    <div class="status-bar"><span>LunchCard</span><span>🔋</span></div>
+    <div class="topbar">
+      <button class="back-btn" onclick="loadDashboard()">←</button>
+      <div class="topbar-title">Lịch sử giao dịch</div>
+    </div>
+    <!-- Balance summary -->
+    <div style="background:white;padding:16px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div>
+        <div style="font-size:11px;color:var(--gray-500);">Số dư hiện tại</div>
+        <div style="font-size:24px;font-weight:700;" id="history-balance">—</div>
+      </div>
+    </div>
+    <div class="scroll-body">
+      <div id="txn-list" style="padding-top:10px;"></div>
+      <div style="height:16px;"></div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" data-tab="home"><span class="nav-icon">🏠</span>Trang chủ</button>
+      <button class="nav-item" data-tab="menu"><span class="nav-icon">🍽️</span>Menu</button>
+      <button class="nav-item" data-tab="orders"><span class="nav-icon">📋</span>Đơn của tôi</button>
+      <button class="nav-item active" data-tab="account"><span class="nav-icon">👤</span>Tài khoản</button>
+    </nav>
+  </div>
+
+</div><!-- end .phone -->
+
+<script src="app.js"></script>
+</body>
+</html>

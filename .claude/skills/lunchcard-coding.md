@@ -151,6 +151,22 @@ These scenarios must have tests regardless of the testing framework chosen:
 
 ---
 
+## Known Limitations (accepted for demo scope)
+
+**One-active-card-per-student is app-level, not DB-enforced.**
+The partial unique index needed for this constraint (`WHERE status = 'active'`) requires raw DDL in SQLite — SQLAlchemy's `UniqueConstraint` doesn't support it. The guard lives in `routers/students.py:issue_card`. This means two concurrent card-issuance requests for the same student could theoretically both pass the check and create two active cards. At demo scale (local, single staff terminal) this is an accepted risk. Fix for production: add the partial index via `op.execute("CREATE UNIQUE INDEX ...")` in a migration, or switch to PostgreSQL which supports it via `UniqueConstraint(..., postgresql_where=...)`.
+
+**One-non-cancelled-order-per-student-per-slot is app-level, not DB-enforced.**
+Same root cause: the uniqueness is status-aware (cancelled orders don't count), which SQLite's `UniqueConstraint` can't express. The guard lives in `routers/orders.py:place_preorder` — it queries for an existing non-cancelled order before inserting. Race condition risk is identical to the card case, and accepted for the same reason.
+
+**QR expiry does not auto-cancel orders.**
+When a QR expires, the order stays `pending`, the slot remains consumed, and the balance stays deducted. Staff can still confirm via `manual_entry` source (which bypasses the expiry check). There is no background job to sweep up un-collected pending orders after a timeslot ends. For a production system this would need a scheduled task (e.g., mark all `pending` orders `cancelled` 30 minutes after timeslot end, refund balances, restore slots).
+
+**Student auth is not implemented — the student frontend uses staff credentials.**
+The demo has one auth system (the `Staff` table). The student frontend (`frontend/student/`) logs in with staff credentials and hardcodes student MSSV 20110001. A real deployment would need a `Student` password column or SSO integration.
+
+---
+
 ## Local Dev Setup
 
 ```bash

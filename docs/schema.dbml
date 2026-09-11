@@ -1,0 +1,120 @@
+// LunchCard – Database Schema
+// Paste into https://dbdiagram.io to visualize
+//
+// Design constraints encoded here:
+//   - Balance lives on Account, never on Card
+//   - transactions is append-only (no updates)
+//   - available_quantity cannot go below 0
+//   - order_type is immutable after creation
+
+// ── Identity ──────────────────────────────────────────────────────────────────
+
+Table students {
+  id          integer    [pk, increment]
+  student_id  varchar(20) [unique, not null, note: 'MSSV, e.g. 20110001']
+  full_name   varchar(100) [not null]
+  email       varchar(100) [null]
+  created_at  datetime   [not null]
+  updated_at  datetime
+}
+
+Table cards {
+  id          integer    [pk, increment]
+  student_id  integer    [not null, ref: > students.id]
+  card_token  varchar(50) [unique, not null, note: 'Physical card identifier']
+  status      varchar(10) [not null, note: 'active | locked']
+  issued_at   datetime   [not null]
+  locked_at   datetime   [null]
+
+  note: 'One active card per student enforced in app logic. Locking a card NEVER touches Account.balance.'
+}
+
+// ── Financial ─────────────────────────────────────────────────────────────────
+
+Table accounts {
+  id          integer    [pk, increment]
+  student_id  integer    [unique, not null, ref: > students.id]
+  balance     numeric(10,0) [not null, default: 0, note: 'VND. CHECK balance >= 0']
+  updated_at  datetime
+
+  note: 'Balance belongs to the student, not the card. One account per student.'
+}
+
+Table transactions {
+  id               integer    [pk, increment]
+  account_id       integer    [not null, ref: > accounts.id]
+  transaction_type varchar(10) [not null, note: 'top_up | deduction | refund']
+  amount           numeric(10,0) [not null, note: 'Positive = credit, negative = debit']
+  balance_after    numeric(10,0) [not null, note: 'Snapshot of balance after this transaction']
+  reference_order  integer    [null, ref: > orders.id, note: 'Null for top-ups']
+  actor_id         integer    [null, ref: > staff.id,  note: 'Staff who performed top-up']
+  note             text       [null]
+  created_at       datetime   [not null]
+
+  note: 'Append-only. No UPDATE or DELETE on committed rows. Every balance change writes one row atomically.'
+}
+
+// ── Menu ──────────────────────────────────────────────────────────────────────
+
+Table menu_items {
+  id          integer    [pk, increment]
+  name        varchar(100) [not null]
+  description text       [null]
+  price       numeric(10,0) [not null, note: 'VND']
+  is_active   boolean    [not null, default: true]
+}
+
+Table timeslots {
+  id          integer    [pk, increment]
+  label       varchar(20) [not null, note: 'e.g. "11:00 – 11:30"']
+  start_time  varchar(5) [not null, note: 'HH:MM']
+  end_time    varchar(5) [not null, note: 'HH:MM']
+  sort_order  integer    [not null]
+}
+
+Table daily_menu {
+  id                 integer    [pk, increment]
+  date               varchar(10) [not null, note: 'ISO date YYYY-MM-DD']
+  timeslot_id        integer    [not null, ref: > timeslots.id]
+  menu_item_id       integer    [not null, ref: > menu_items.id]
+  available_quantity integer    [not null, note: 'CHECK >= 0. Decremented atomically on order confirm.']
+
+  indexes {
+    (date, timeslot_id, menu_item_id) [unique]
+  }
+
+  note: 'One row per item per timeslot per day. Slot reservation uses SELECT + check before decrement.'
+}
+
+// ── Orders ────────────────────────────────────────────────────────────────────
+
+Table orders {
+  id              integer    [pk, increment]
+  student_id      integer    [not null, ref: > students.id]
+  daily_menu_id   integer    [not null, ref: > daily_menu.id]
+  timeslot_id     integer    [not null, ref: > timeslots.id]
+  order_type      varchar(10) [not null, note: 'pre_order | walk_in — immutable after creation']
+  status          varchar(10) [not null, note: 'pending | ready | delivered | cancelled']
+  source          varchar(15) [null,     note: 'qr_scan | manual_entry — set on delivery confirmation']
+  amount_charged  numeric(10,0) [not null]
+  qr_token        varchar(50) [unique, null, note: 'Null for walk-in. Format: CARD·XXXX']
+  qr_expires_at   datetime   [null,     note: 'QR_EXPIRY_MINUTES after timeslot start. Null for walk-in.']
+  placed_by_staff integer    [null, ref: > staff.id, note: 'Set for walk-in orders placed by staff']
+  delivered_by    integer    [null, ref: > staff.id, note: 'Set on delivery confirmation']
+  created_at      datetime   [not null]
+  updated_at      datetime
+
+  note: 'One non-cancelled order per student per daily_menu entry — enforced in app logic, not DB constraint.'
+}
+
+// ── Staff ─────────────────────────────────────────────────────────────────────
+
+Table staff {
+  id            integer    [pk, increment]
+  username      varchar(50) [unique, not null]
+  full_name     varchar(100) [not null]
+  password_hash varchar(200) [not null]
+  is_admin      boolean    [not null, default: false]
+  is_active     boolean    [not null, default: true]
+  created_at    datetime   [not null]
+}

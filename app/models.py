@@ -84,12 +84,9 @@ class Card(Base):
     is the only thing that changes during a card swap.
     """
     __tablename__ = "cards"
-    __table_args__ = (
-        # Only one active card per student at a time
-        UniqueConstraint("student_id", "status",
-                         name="uq_one_active_card_per_student",
-                         sqlite_where="status = 'active'"),
-    )
+    __table_args__ = ()
+    # One-active-card-per-student is enforced in application logic (students router),
+    # not as a DB constraint — SQLite partial unique indexes require raw DDL.
 
     id         = Column(Integer, primary_key=True)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
@@ -192,7 +189,6 @@ class DailyMenu(Base):
     timeslot_id        = Column(Integer, ForeignKey("timeslots.id"), nullable=False)
     menu_item_id       = Column(Integer, ForeignKey("menu_items.id"), nullable=False)
     available_quantity = Column(Integer, nullable=False)
-    total_quantity     = Column(Integer, nullable=False)       # original capacity, for reporting
 
     timeslot  = relationship("Timeslot",  back_populates="daily_menu")
     menu_item = relationship("MenuItem",  back_populates="daily_entries")
@@ -208,9 +204,9 @@ class Order(Base):
     source records whether staff used QR scan or manual entry (offline fallback).
     """
     __tablename__ = "orders"
-    __table_args__ = (
-        UniqueConstraint("student_id", "daily_menu_id", name="uq_one_order_per_student_per_slot"),
-    )
+    __table_args__ = ()
+    # One non-cancelled order per student per slot is enforced in app logic (orders router),
+    # not as a DB constraint — the uniqueness is status-aware (cancelled orders don't count).
 
     id             = Column(Integer, primary_key=True)
     student_id     = Column(Integer, ForeignKey("students.id"),    nullable=False)
