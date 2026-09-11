@@ -1,4 +1,4 @@
-// LunchCard – Database Schema
+// LunchCard – Database Schema (simplified)
 // Paste into https://dbdiagram.io to visualize
 //
 // Design constraints encoded here:
@@ -46,9 +46,6 @@ Table transactions {
   transaction_type varchar(10) [not null, note: 'top_up | deduction | refund']
   amount           numeric(10,0) [not null, note: 'Positive = credit, negative = debit']
   balance_after    numeric(10,0) [not null, note: 'Snapshot of balance after this transaction']
-  reference_order  integer    [null, ref: > orders.id, note: 'Null for top-ups']
-  actor_id         integer    [null, ref: > staff.id,  note: 'Staff who performed top-up']
-  note             text       [null]
   created_at       datetime   [not null]
 
   note: 'Append-only. No UPDATE or DELETE on committed rows. Every balance change writes one row atomically.'
@@ -92,15 +89,11 @@ Table orders {
   id              integer    [pk, increment]
   student_id      integer    [not null, ref: > students.id]
   daily_menu_id   integer    [not null, ref: > daily_menu.id]
-  timeslot_id     integer    [not null, ref: > timeslots.id]
   order_type      varchar(10) [not null, note: 'pre_order | walk_in — immutable after creation']
   status          varchar(10) [not null, note: 'pending | ready | delivered | cancelled']
-  source          varchar(15) [null,     note: 'qr_scan | manual_entry — set on delivery confirmation']
   amount_charged  numeric(10,0) [not null]
   qr_token        varchar(50) [unique, null, note: 'Null for walk-in. Format: CARD·XXXX']
-  qr_expires_at   datetime   [null,     note: 'QR_EXPIRY_MINUTES after timeslot start. Null for walk-in.']
-  placed_by_staff integer    [null, ref: > staff.id, note: 'Set for walk-in orders placed by staff']
-  delivered_by    integer    [null, ref: > staff.id, note: 'Set on delivery confirmation']
+  qr_expires_at   datetime   [null, note: 'QR_EXPIRY_MINUTES after timeslot start. Null for walk-in.']
   created_at      datetime   [not null]
   updated_at      datetime
 
