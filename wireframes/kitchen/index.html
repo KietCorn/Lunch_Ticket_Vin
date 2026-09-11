@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe – Kitchen Display</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --danger: #dc2626;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #94a3b8;
+    padding: 28px;
+    color: var(--gray-800);
+  }
+
+  .page-wrapper { max-width: 1600px; margin: 0 auto; }
+  .page-title {
+    font-size: 13px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .08em; color: #475569; margin-bottom: 6px;
+  }
+
+  /* ── Annotation boxes ── */
+  .annotation {
+    font-size: 12px; padding: 8px 12px; border-radius: 6px;
+    margin-bottom: 20px; display: inline-block;
+  }
+  .annotation-rt {
+    background: #fef3c7; border: 1px solid #fcd34d; color: #92400e;
+  }
+  .annotation-note {
+    background: #e0f2fe; border: 1px solid #7dd3fc; color: #075985;
+    margin-left: 10px;
+  }
+
+  .screens-stack { display: flex; flex-direction: column; gap: 40px; }
+
+  /* ── Monitor Frame ── */
+  .monitor-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: #475569; margin-bottom: 8px;
+  }
+  .monitor-frame {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.3), 0 0 0 1px rgba(0,0,0,.2);
+  }
+  .monitor-screen {
+    background: #0f172a;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  /* Stand */
+  .monitor-stand {
+    width: 80px; height: 14px; background: #334155;
+    margin: 0 auto; border-radius: 0 0 4px 4px;
+  }
+
+  /* ── Kitchen header ── */
+  .kitchen-header {
+    background: #0f172a;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .kh-title { font-size: 16px; font-weight: 800; color: white; letter-spacing: .02em; }
+  .kh-timeslot {
+    background: #1e3a8a; color: #93c5fd;
+    padding: 4px 12px; border-radius: 99px;
+    font-size: 12px; font-weight: 700;
+  }
+  .kh-counts { display: flex; gap: 12px; margin-left: auto; }
+  .kh-count {
+    display: flex; flex-direction: column; align-items: center;
+    background: #1e293b; border-radius: 6px; padding: 6px 14px;
+  }
+  .kh-count-num { font-size: 22px; font-weight: 800; color: white; line-height: 1; }
+  .kh-count-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+  /* Live indicator */
+  .live-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: #4ade80;
+    margin-left: 8px;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #4ade80;
+    /* In real implementation: animate pulse */
+    box-shadow: 0 0 0 3px rgba(74,222,128,.2);
+  }
+
+  /* Disconnected state */
+  .disconnected-banner {
+    background: #7f1d1d; color: #fca5a5;
+    padding: 8px 20px; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #991b1b;
+  }
+
+  /* ── Column layout ── */
+  .kitchen-body { display: flex; height: 520px; }
+
+  .queue-column {
+    flex: 1; padding: 12px; overflow-y: auto;
+    border-right: 1px solid #1e293b;
+  }
+  .queue-column:last-child { border-right: none; }
+
+  .col-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 2px solid #1e293b;
+  }
+  .col-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+  .col-title.pending { color: #fbbf24; }
+  .col-title.ready   { color: #34d399; }
+  .col-title.done    { color: #64748b; }
+  .col-count {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 99px;
+  }
+  .col-count.pending { background: #451a03; color: #fbbf24; }
+  .col-count.ready   { background: #064e3b; color: #34d399; }
+  .col-count.done    { background: #1e293b; color: #64748b; }
+
+  /* ── Order card ── */
+  .order-card {
+    background: #1e293b; border-radius: 8px; padding: 11px 12px;
+    margin-bottom: 8px; border: 1px solid #334155;
+    cursor: pointer; transition: border-color .15s;
+  }
+  .order-card:hover { border-color: #475569; }
+  .order-card.pre-order { border-left: 3px solid #7c3aed; }
+  .order-card.walk-in   { border-left: 3px solid #d97706; }
+  .order-card.done-card {
+    background: #0f172a; border-color: #1e293b; opacity: .55;
+  }
+
+  .oc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .oc-time { font-size: 20px; font-weight: 800; color: white; line-height: 1; }
+  .oc-badge-preorder {
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    background: #4c1d95; color: #c4b5fd; padding: 2px 6px; border-radius: 4px;
+  }
+  .oc-badge-walkin {
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    background: #451a03; color: #fcd34d; padding: 2px 6px; border-radius: 4px;
+  }
+  .oc-item { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+  .oc-student { font-size: 11px; color: #64748b; }
+
+  .oc-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .oc-btn {
+    flex: 1; padding: 7px; border-radius: 6px; font-size: 12px;
+    font-weight: 700; cursor: pointer; border: none; text-align: center;
+  }
+  .oc-btn-ready { background: #065f46; color: #34d399; }
+  .oc-btn-ready:hover { background: #047857; }
+  .oc-btn-done  { background: #1e3a8a; color: #93c5fd; }
+
+  /* ── Timeslot filter bar ── */
+  .timeslot-filter {
+    background: #0f172a; padding: 8px 16px;
+    display: flex; gap: 8px; align-items: center;
+    border-bottom: 1px solid #1e293b;
+  }
+  .tf-label { font-size: 11px; color: #64748b; font-weight: 600; margin-right: 4px; }
+  .tf-tab {
+    padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700;
+    cursor: pointer; border: 1px solid #334155; color: #94a3b8; background: transparent;
+  }
+  .tf-tab.active { background: #1e3a8a; color: #93c5fd; border-color: #1e3a8a; }
+  .tf-tab.past   { color: #475569; border-color: #1e293b; }
+
+  /* ── State 2: Disconnected overlay note ── */
+  .state-label {
+    font-size: 13px; font-weight: 700; color: #475569;
+    margin-bottom: 8px; padding-left: 2px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    background: #1e293b; padding: 10px 20px;
+    display: flex; gap: 20px; align-items: center;
+    border-top: 1px solid #0f172a;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
+  .legend-swatch { width: 12px; height: 20px; border-radius: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="page-title">Wireframe · Kitchen Display · 2 states</div>
+  <div>
+    <span class="annotation annotation-rt">⚡ Real-time requirement: new orders must appear within ~2s of being placed — informs stack selection (WebSocket / SSE vs. polling)</span>
+    <span class="annotation annotation-note">ℹ No login on this screen — URL itself is access control. Display runs full-screen on a wall monitor.</span>
+  </div>
+
+  <div class="screens-stack">
+
+    <!-- ══════════════ STATE 1: ACTIVE QUEUE ══════════════ -->
+    <div>
+      <div class="monitor-label">State 1 · Active queue (normal operation)</div>
+      <div class="monitor-frame">
+        <div class="monitor-screen">
+
+          <div class="kitchen-header">
+            <div class="kh-title">🍳 Kitchen Display</div>
+            <div class="kh-timeslot">⏰ Active: 11:00 – 11:30</div>
+            <div class="live-indicator">
+              <div class="live-dot"></div>
+              LIVE
+            </div>
+            <div style="font-size:11px; color:#475569; margin-left:4px;">Last update: 11:06:42</div>
+            <div class="kh-counts">
+              <div class="kh-count">
+                <div class="kh-count-num" style="color:#fbbf24;">5</div>
+                <div class="kh-count-label" style="color:#78350f;">Pending</div>
+              </div>
+              <div class="kh-count">
+                <div class="kh-count-num" style="color:#34d399;">2</div>
+                <div class="kh-count-label" style="color:#065f46;">Ready</div>
+              </div>
+              <div class="kh-count">
+                <div class="kh-count-num" style="color:#64748b;">11</div>
+                <div class="kh-count-label" style="color:#475569;">Done</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeslot-filter">
+            <span class="tf-label">Timeslot:</span>
+            <span class="tf-tab past">10:30</span>
+            <span class="tf-tab past">11:00</span>
+            <span class="tf-tab active">11:30 ← active</span>
+            <span class="tf-tab">12:00</span>
+            <span class="tf-tab">12:30</span>
+          </div>
+
+          <div class="kitchen-body">
+
+            <!-- PENDING column -->
+            <div class="queue-column">
+              <div class="col-header">
+                <span class="col-title pending">⏳ Pending</span>
+                <span class="col-count pending">5</span>
+              </div>
+
+              <div class="order-card pre-order">
+                <div class="oc-top">
+                  <div class="oc-time">11:02</div>
+                  <span class="oc-badge-preorder">Pre-order</span>
+                </div>
+                <div class="oc-item">🍜 Bún bò Huế</div>
+                <div class="oc-student">Nguyễn Văn A · #0042</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-ready">✓ Mark ready</button>
+                </div>
+              </div>
+
+              <div class="order-card pre-order">
+                <div class="oc-top">
+                  <div class="oc-time">11:04</div>
+                  <span class="oc-badge-preorder">Pre-order</span>
+                </div>
+                <div class="oc-item">🍚 Cơm sườn nướng</div>
+                <div class="oc-student">Phạm Thị C · #0039</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-ready">✓ Mark ready</button>
+                </div>
+              </div>
+
+              <div class="order-card walk-in">
+                <div class="oc-top">
+                  <div class="oc-time">11:06</div>
+                  <span class="oc-badge-walkin">Walk-in</span>
+                </div>
+                <div class="oc-item">🍜 Bún bò Huế</div>
+                <div class="oc-student">Trần Văn D · #0051</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-ready">✓ Mark ready</button>
+                </div>
+              </div>
+
+              <div class="order-card walk-in">
+                <div class="oc-top">
+                  <div class="oc-time">11:06</div>
+                  <span class="oc-badge-walkin">Walk-in</span>
+                </div>
+                <div class="oc-item">🥗 Cơm gà nướng</div>
+                <div class="oc-student">Lê Thị E · #0052</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-ready">✓ Mark ready</button>
+                </div>
+              </div>
+
+              <div class="order-card pre-order">
+                <div class="oc-top">
+                  <div class="oc-time">11:07</div>
+                  <span class="oc-badge-preorder">Pre-order</span>
+                </div>
+                <div class="oc-item">🍚 Cơm sườn nướng</div>
+                <div class="oc-student">Hoàng Văn F · #0043</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-ready">✓ Mark ready</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- READY column -->
+            <div class="queue-column">
+              <div class="col-header">
+                <span class="col-title ready">🔔 Ready for pickup</span>
+                <span class="col-count ready">2</span>
+              </div>
+
+              <div class="order-card pre-order" style="border-color:#065f46; background:#0a2a1f;">
+                <div class="oc-top">
+                  <div class="oc-time" style="color:#34d399;">11:01</div>
+                  <span class="oc-badge-preorder">Pre-order</span>
+                </div>
+                <div class="oc-item" style="color:#86efac;">🍚 Cơm sườn nướng</div>
+                <div class="oc-student">Vũ Thị G · #0040</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-done">✓ Mark delivered</button>
+                </div>
+              </div>
+
+              <div class="order-card walk-in" style="border-color:#065f46; background:#0a2a1f;">
+                <div class="oc-top">
+                  <div class="oc-time" style="color:#34d399;">11:03</div>
+                  <span class="oc-badge-walkin">Walk-in</span>
+                </div>
+                <div class="oc-item" style="color:#86efac;">🍜 Bún bò Huế</div>
+                <div class="oc-student">Đặng Văn H · #0047</div>
+                <div class="oc-actions">
+                  <button class="oc-btn oc-btn-done">✓ Mark delivered</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- DONE column -->
+            <div class="queue-column">
+              <div class="col-header">
+                <span class="col-title done">✓ Delivered</span>
+                <span class="col-count done">11</span>
+              </div>
+
+              <div class="order-card done-card pre-order">
+                <div class="oc-top">
+                  <div class="oc-time" style="color:#475569;">10:52</div>
+                  <span class="oc-badge-preorder" style="opacity:.5;">Pre-order</span>
+                </div>
+                <div class="oc-item" style="color:#475569;">🍜 Bún bò Huế</div>
+                <div class="oc-student">... Nguyễn Văn A · #0038</div>
+              </div>
+
+              <div class="order-card done-card walk-in">
+                <div class="oc-top">
+                  <div class="oc-time" style="color:#475569;">10:55</div>
+                  <span class="oc-badge-walkin" style="opacity:.5;">Walk-in</span>
+                </div>
+                <div class="oc-item" style="color:#475569;">🥗 Cơm gà nướng</div>
+                <div class="oc-student">Trần Thị K · #0044</div>
+              </div>
+
+              <div style="text-align:center; color:#334155; font-size:11px; margin-top:8px;">+ 9 more</div>
+            </div>
+
+          </div><!-- kitchen-body -->
+
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#7c3aed;"></div>
+              Purple left border = Pre-order (paid in advance)
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#d97706;"></div>
+              Amber left border = Walk-in
+            </div>
+            <div class="legend-item" style="margin-left:auto; color:#475569;">
+              Auto-refresh · No login required
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="monitor-stand"></div>
+    </div>
+
+    <!-- ══════════════ STATE 2: DISCONNECTED ══════════════ -->
+    <div>
+      <div class="monitor-label">State 2 · Connection lost (real-time failure state)</div>
+      <div style="font-size:12px; color:#475569; margin-bottom:10px; background:#fef3c7; border:1px solid #fcd34d; padding:8px 12px; border-radius:6px; display:inline-block;">
+        ⚡ This state drives a key stack constraint: the display must detect dropped connections and warn kitchen staff. Polling silently shows stale data; WebSocket/SSE can surface this banner immediately.
+      </div>
+      <div class="monitor-frame">
+        <div class="monitor-screen">
+
+          <div class="kitchen-header">
+            <div class="kh-title">🍳 Kitchen Display</div>
+            <div class="kh-timeslot">⏰ Active: 11:00 – 11:30</div>
+            <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#f87171; font-weight:700; margin-left:8px;">
+              <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span>
+              DISCONNECTED
+            </div>
+            <div class="kh-counts" style="opacity:.4;">
+              <div class="kh-count"><div class="kh-count-num">—</div><div class="kh-count-label" style="color:#78350f;">Pending</div></div>
+              <div class="kh-count"><div class="kh-count-num">—</div><div class="kh-count-label" style="color:#065f46;">Ready</div></div>
+            </div>
+          </div>
+
+          <div class="disconnected-banner">
+            <span>⚠️</span>
+            <span>Connection to server lost — data may be outdated. Reconnecting… &nbsp;<strong>Last sync: 11:06:42</strong></span>
+          </div>
+
+          <div class="kitchen-body" style="opacity:.35; pointer-events:none; position:relative;">
+            <!-- Dimmed content same as state 1 - abbreviated -->
+            <div class="queue-column">
+              <div class="col-header"><span class="col-title pending">⏳ Pending</span><span class="col-count pending">5</span></div>
+              <div class="order-card pre-order" style="margin-bottom:8px;">
+                <div class="oc-top"><div class="oc-time">11:02</div><span class="oc-badge-preorder">Pre-order</span></div>
+                <div class="oc-item">🍜 Bún bò Huế</div>
+                <div class="oc-student">Nguyễn Văn A</div>
+              </div>
+              <div class="order-card walk-in">
+                <div class="oc-top"><div class="oc-time">11:06</div><span class="oc-badge-walkin">Walk-in</span></div>
+                <div class="oc-item">🥗 Cơm gà nướng</div>
+                <div class="oc-student">Lê Thị E</div>
+              </div>
+            </div>
+            <div class="queue-column">
+              <div class="col-header"><span class="col-title ready">🔔 Ready</span><span class="col-count ready">2</span></div>
+              <div class="order-card pre-order" style="border-color:#065f46; background:#0a2a1f;">
+                <div class="oc-top"><div class="oc-time" style="color:#34d399;">11:01</div><span class="oc-badge-preorder">Pre-order</span></div>
+                <div class="oc-item" style="color:#86efac;">🍚 Cơm sườn nướng</div>
+                <div class="oc-student">Vũ Thị G</div>
+              </div>
+            </div>
+            <div class="queue-column">
+              <div class="col-header"><span class="col-title done">✓ Done</span><span class="col-count done">11</span></div>
+            </div>
+          </div>
+
+          <!-- Reconnect overlay -->
+          <div style="position:relative; background:#1a0000; padding:16px 20px; border-top:1px solid #7f1d1d; display:flex; align-items:center; gap:16px;">
+            <div style="width:20px;height:20px;border:3px solid #ef4444;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0;"></div>
+            <div>
+              <div style="color:#fca5a5; font-size:13px; font-weight:700;">Attempting to reconnect…</div>
+              <div style="color:#7f1d1d; font-size:11px; margin-top:2px;">Retry 3 of 5 · <span style="color:#f87171;">If this persists, refresh the page or notify IT</span></div>
+            </div>
+          </div>
+
+          <div class="legend">
+            <div class="legend-item" style="color:#475569;">Data shown above is frozen at last sync time. Do not act on it until reconnected.</div>
+          </div>
+        </div>
+      </div>
+      <div class="monitor-stand"></div>
+    </div>
+
+  </div><!-- screens-stack -->
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
