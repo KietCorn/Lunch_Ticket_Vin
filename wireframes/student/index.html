@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe – Sinh viên</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --primary-dark: #1d4ed8;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #e2e8f0;
+    min-height: 100vh;
+    padding: 24px;
+    color: var(--gray-800);
+  }
+
+  /* ── Layout ── */
+  .page-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--gray-500);
+    margin-bottom: 20px;
+  }
+
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-frame {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,.06);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .phone-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--gray-400);
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    background: var(--primary);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ── Top Bar ── */
+  .topbar {
+    background: var(--primary);
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .back-btn {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    display: flex;
+    border-top: 1px solid var(--gray-200);
+    background: white;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px 12px;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gray-400);
+    cursor: pointer;
+  }
+  .nav-item.active { color: var(--primary); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* ── Screen Body ── */
+  .screen-body {
+    background: var(--gray-50);
+    min-height: 420px;
+    overflow: hidden;
+  }
+
+  /* ── Components ── */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-success { background: var(--success-light); color: var(--success); }
+  .badge-warning { background: var(--warning-light); color: var(--warning); }
+  .badge-primary { background: var(--primary-light); color: var(--primary); }
+  .badge-gray   { background: var(--gray-100);       color: var(--gray-600); }
+  .badge-danger { background: var(--danger-light);   color: var(--danger); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-danger  { background: var(--danger);  color: white; }
+  .btn-sm { padding: 7px 14px; font-size: 13px; width: auto; }
+
+  input[type=text], input[type=password] {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-size: 14px;
+    outline: none;
+    color: var(--gray-800);
+    background: white;
+  }
+  input:focus { border-color: var(--primary); }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: 12px 0;
+  }
+
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ── Specific screens ── */
+
+  /* 1. Login */
+  .login-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+    padding: 40px 24px 32px;
+    text-align: center;
+    color: white;
+  }
+  .login-hero .logo { font-size: 40px; margin-bottom: 8px; }
+  .login-hero h1 { font-size: 20px; font-weight: 700; }
+  .login-hero p  { font-size: 12px; opacity: .75; margin-top: 4px; }
+  .login-form { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* 2. Dashboard */
+  .balance-card {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+    color: white;
+    padding: 20px;
+    margin: 12px;
+    border-radius: var(--radius);
+  }
+  .balance-label { font-size: 11px; opacity: .8; font-weight: 500; }
+  .balance-amount { font-size: 32px; font-weight: 700; margin: 4px 0 2px; }
+  .balance-student { font-size: 12px; opacity: .75; }
+  .quick-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; padding: 0 12px 12px; }
+  .qa-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: white; border-radius: var(--radius-sm); padding: 12px 4px;
+    box-shadow: var(--shadow); cursor: pointer; font-size: 10px; font-weight: 600;
+    color: var(--gray-700);
+  }
+  .qa-icon { font-size: 22px; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 12px 8px; }
+  .section-title { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .section-link { font-size: 12px; color: var(--primary); font-weight: 500; }
+  .order-item {
+    background: white; margin: 0 12px 8px; border-radius: var(--radius-sm);
+    padding: 12px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;
+  }
+  .order-icon { font-size: 28px; }
+  .order-info { flex: 1; }
+  .order-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .order-meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .order-price { font-size: 13px; font-weight: 700; color: var(--primary); }
+
+  /* 3. Menu */
+  .time-tabs { display: flex; gap: 8px; padding: 12px; overflow-x: auto; }
+  .time-tab {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 99px; font-size: 12px;
+    font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200);
+    background: white; color: var(--gray-600);
+  }
+  .time-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .menu-item {
+    background: white; margin: 0 12px 10px; border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow); display: flex;
+  }
+  .menu-img { width: 90px; height: 80px; background: var(--gray-200); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .menu-info { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .menu-name { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .menu-desc { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .menu-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .menu-price { font-size: 14px; font-weight: 700; color: var(--primary); }
+  .add-btn {
+    width: 28px; height: 28px; background: var(--primary); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 300; cursor: pointer; flex-shrink: 0;
+  }
+
+  /* 4. Pre-order flow */
+  .step-indicator { display: flex; align-items: center; padding: 14px 16px; background: white; border-bottom: 1px solid var(--gray-200); }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .step-circle {
+    width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; background: var(--gray-200); color: var(--gray-500);
+  }
+  .step-circle.done { background: var(--success); color: white; }
+  .step-circle.active { background: var(--primary); color: white; }
+  .step-label { font-size: 10px; color: var(--gray-500); }
+  .step-label.active { color: var(--primary); font-weight: 600; }
+  .step-line { flex: 1; height: 1px; background: var(--gray-200); margin: 0 4px; align-self: flex-start; margin-top: 14px; }
+  .step-line.done { background: var(--success); }
+
+  .time-slot-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 12px 16px; }
+  .time-slot {
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    padding: 10px 4px; text-align: center; cursor: pointer; background: white;
+  }
+  .time-slot.selected { border-color: var(--primary); background: var(--primary-light); }
+  .time-slot.full { opacity: .45; cursor: not-allowed; background: var(--gray-50); }
+  .slot-time { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .slot-avail { font-size: 10px; color: var(--gray-500); margin-top: 2px; }
+  .slot-avail.low { color: var(--danger); }
+  .slot-avail.full-text { color: var(--gray-400); }
+
+  /* 5. QR Screen */
+  .qr-area {
+    display: flex; flex-direction: column; align-items: center; padding: 24px 16px;
+    background: white; margin: 12px; border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  .qr-box {
+    width: 180px; height: 180px; border: 3px solid var(--primary); border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 80px;
+    margin: 12px 0; background: var(--primary-light);
+  }
+  .qr-code-text { font-size: 22px; font-weight: 800; letter-spacing: .12em; color: var(--gray-800); }
+  .qr-expires { font-size: 11px; color: var(--danger); font-weight: 600; margin-top: 4px; }
+  .order-summary { background: white; margin: 0 12px; border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); }
+  .summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+  .summary-row.total { font-weight: 700; font-size: 14px; border-top: 1px solid var(--gray-200); margin-top: 4px; padding-top: 8px; }
+
+  /* 6. History */
+  .txn-item {
+    background: white; margin: 0 12px 8px; border-radius: var(--radius-sm);
+    padding: 12px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;
+  }
+  .txn-icon-wrap {
+    width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .txn-icon-wrap.credit { background: var(--success-light); }
+  .txn-icon-wrap.debit  { background: var(--primary-light); }
+  .txn-info { flex: 1; }
+  .txn-name { font-size: 13px; font-weight: 600; }
+  .txn-date { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .txn-amount { font-size: 14px; font-weight: 700; }
+  .txn-amount.credit { color: var(--success); }
+  .txn-amount.debit  { color: var(--gray-800); }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="page-title">Wireframe · Luồng Sinh Viên · 6 màn hình</div>
+  <div class="screens-grid">
+
+    <!-- ══════════════ 1. LOGIN ══════════════ -->
+    <div>
+      <div class="phone-label">1 · Đăng nhập</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>9:41</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="login-hero">
+          <div class="logo">🍱</div>
+          <h1>LunchCard SV</h1>
+          <p>Hệ thống thẻ ăn trưa sinh viên</p>
+        </div>
+        <div class="login-form">
+          <div>
+            <label>Mã sinh viên</label>
+            <input type="text" value="20110001" />
+          </div>
+          <div>
+            <label>Mật khẩu</label>
+            <input type="password" value="••••••••" />
+          </div>
+          <button class="btn btn-primary">Đăng nhập</button>
+          <div style="text-align:center; font-size:12px; color:var(--gray-500);">
+            hoặc
+          </div>
+          <button class="btn btn-outline">🏫 Đăng nhập bằng tài khoản trường</button>
+          <div style="text-align:center; font-size:12px; color:var(--primary); margin-top:4px; cursor:pointer;">Quên mật khẩu?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ 2. DASHBOARD ══════════════ -->
+    <div>
+      <div class="phone-label">2 · Dashboard (Trang chủ)</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>9:41</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="topbar" style="justify-content:space-between;">
+          <div>
+            <div style="font-size:11px; opacity:.8;">Xin chào,</div>
+            <div style="font-size:16px; font-weight:700;">Nguyễn Văn A</div>
+          </div>
+          <div style="font-size:24px; cursor:pointer;">🔔</div>
+        </div>
+        <div class="screen-body">
+          <div class="balance-card">
+            <div class="balance-label">Số dư tài khoản</div>
+            <div class="balance-amount">125.000 ₫</div>
+            <div class="balance-student">MSSV: 20110001 · Thẻ: #A0012</div>
+            <div style="margin-top:12px;">
+              <span class="badge" style="background:rgba(255,255,255,.2);color:white;font-size:11px;">🟢 Thẻ đang hoạt động</span>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <div class="qa-btn"><span class="qa-icon">📋</span>Đặt trước</div>
+            <div class="qa-btn"><span class="qa-icon">📜</span>Lịch sử</div>
+            <div class="qa-btn"><span class="qa-icon">📱</span>QR của tôi</div>
+            <div class="qa-btn"><span class="qa-icon">🔒</span>Báo mất thẻ</div>
+          </div>
+
+          <div style="padding: 4px 0 0;">
+            <div class="section-header">
+              <span class="section-title">Đơn hôm nay</span>
+              <span class="section-link">Xem tất cả →</span>
+            </div>
+            <div class="order-item">
+              <span class="order-icon">🍜</span>
+              <div class="order-info">
+                <div class="order-name">Cơm sườn + canh</div>
+                <div class="order-meta">⏰ 11:00 – 11:30 · Pre-order</div>
+                <div style="margin-top:4px;"><span class="badge badge-warning">Chờ lấy</span></div>
+              </div>
+              <div class="order-price">35.000₫</div>
+            </div>
+
+            <div class="section-header" style="margin-top:4px;">
+              <span class="section-title">Menu hôm nay</span>
+              <span class="section-link">Xem thêm →</span>
+            </div>
+            <div class="order-item">
+              <span class="order-icon">🍚</span>
+              <div class="order-info">
+                <div class="order-name">Cơm gà nướng</div>
+                <div class="order-meta">Còn 12 suất · 11:00–12:30</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="order-price">35.000₫</div>
+                <button class="btn btn-primary btn-sm" style="margin-top:4px;padding:5px 10px;font-size:11px;">Đặt</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="nav-icon">🏠</span>Trang chủ</div>
+          <div class="nav-item"><span class="nav-icon">🍽️</span>Menu</div>
+          <div class="nav-item"><span class="nav-icon">📋</span>Đơn của tôi</div>
+          <div class="nav-item"><span class="nav-icon">👤</span>Tài khoản</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ 3. MENU ══════════════ -->
+    <div>
+      <div class="phone-label">3 · Menu hôm nay</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>9:41</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="topbar">
+          <div class="topbar-title">Menu hôm nay</div>
+          <div style="font-size:20px;">🔍</div>
+        </div>
+        <div class="screen-body">
+          <div class="time-tabs">
+            <div class="time-tab active">10:30 – 11:00</div>
+            <div class="time-tab">11:00 – 11:30</div>
+            <div class="time-tab">11:30 – 12:00</div>
+            <div class="time-tab">12:00 – 12:30</div>
+          </div>
+
+          <div style="padding: 4px 12px 8px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px; color:var(--gray-500);">Thứ Năm, 11/09/2026</span>
+            <span class="badge badge-primary">4 món</span>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-img">🍜</div>
+            <div class="menu-info">
+              <div>
+                <div class="menu-name">Bún bò Huế</div>
+                <div class="menu-desc">Bún, thịt bò, chả, rau sống</div>
+              </div>
+              <div class="menu-footer">
+                <div>
+                  <div class="menu-price">30.000₫</div>
+                  <div style="font-size:10px; color:var(--gray-500); margin-top:1px;">Còn 18 suất</div>
+                </div>
+                <div class="add-btn">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-img">🍚</div>
+            <div class="menu-info">
+              <div>
+                <div class="menu-name">Cơm sườn nướng</div>
+                <div class="menu-desc">Cơm, sườn, canh chua, rau</div>
+              </div>
+              <div class="menu-footer">
+                <div>
+                  <div class="menu-price">35.000₫</div>
+                  <div style="font-size:10px; color:var(--danger); margin-top:1px;">Còn 3 suất</div>
+                </div>
+                <div class="add-btn">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-img" style="background:var(--gray-300);">🍲</div>
+            <div class="menu-info">
+              <div>
+                <div class="menu-name">Phở bò tái</div>
+                <div class="menu-desc">Phở, thịt bò tái, hành, gừng</div>
+              </div>
+              <div class="menu-footer">
+                <div>
+                  <div class="menu-price">35.000₫</div>
+                  <div style="font-size:10px; color:var(--gray-400); margin-top:1px;">Hết suất</div>
+                </div>
+                <div class="add-btn" style="background:var(--gray-300);cursor:not-allowed;">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="nav-icon">🏠</span>Trang chủ</div>
+          <div class="nav-item active"><span class="nav-icon">🍽️</span>Menu</div>
+          <div class="nav-item"><span class="nav-icon">📋</span>Đơn của tôi</div>
+          <div class="nav-item"><span class="nav-icon">👤</span>Tài khoản</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ 4. PRE-ORDER ══════════════ -->
+    <div>
+      <div class="phone-label">4 · Đặt món trước (Pre-order)</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>9:41</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="topbar">
+          <div class="back-btn">←</div>
+          <div class="topbar-title">Đặt món trước</div>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step">
+            <div class="step-circle done">✓</div>
+            <div class="step-label">Chọn món</div>
+          </div>
+          <div class="step-line done"></div>
+          <div class="step">
+            <div class="step-circle active">2</div>
+            <div class="step-label active">Chọn giờ</div>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Xác nhận</div>
+          </div>
+        </div>
+
+        <div class="screen-body">
+          <!-- Selected item summary -->
+          <div style="background:white; padding:12px 16px; border-bottom:1px solid var(--gray-200); display:flex; gap:12px; align-items:center;">
+            <span style="font-size:28px;">🍜</span>
+            <div style="flex:1;">
+              <div style="font-size:14px; font-weight:700;">Bún bò Huế</div>
+              <div style="font-size:12px; color:var(--gray-500);">Bún, thịt bò, chả, rau sống</div>
+            </div>
+            <div style="font-size:15px; font-weight:700; color:var(--primary);">30.000₫</div>
+          </div>
+
+          <div style="padding:14px 16px 8px; font-size:13px; font-weight:700; color:var(--gray-700);">
+            Chọn khung giờ lấy đồ ăn
+          </div>
+          <div style="padding:0 12px 4px; font-size:11px; color:var(--gray-500);">
+            Thứ Năm, 11/09/2026 · Deadline hủy trước 30 phút
+          </div>
+
+          <div class="time-slot-grid">
+            <div class="time-slot">
+              <div class="slot-time">10:30</div>
+              <div class="slot-avail low">Còn 2</div>
+            </div>
+            <div class="time-slot selected">
+              <div class="slot-time">11:00</div>
+              <div class="slot-avail">Còn 15</div>
+            </div>
+            <div class="time-slot">
+              <div class="slot-time">11:30</div>
+              <div class="slot-avail">Còn 20</div>
+            </div>
+            <div class="time-slot full">
+              <div class="slot-time">12:00</div>
+              <div class="slot-avail full-text">Hết chỗ</div>
+            </div>
+            <div class="time-slot">
+              <div class="slot-time">12:30</div>
+              <div class="slot-avail">Còn 8</div>
+            </div>
+            <div class="time-slot">
+              <div class="slot-time">13:00</div>
+              <div class="slot-avail">Còn 12</div>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div style="margin:8px 12px; background:var(--primary-light); border-radius:var(--radius-sm); padding:12px; border:1px solid #bfdbfe;">
+            <div style="display:flex; justify-content:space-between; font-size:13px;">
+              <span style="color:var(--gray-600);">Bún bò Huế × 1</span>
+              <span style="font-weight:600;">30.000₫</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:6px;">
+              <span style="color:var(--gray-500);">Số dư hiện tại</span>
+              <span style="color:var(--gray-600);">125.000₫</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:3px;">
+              <span style="color:var(--gray-500);">Số dư sau đặt</span>
+              <span style="color:var(--success); font-weight:600;">95.000₫</span>
+            </div>
+          </div>
+
+          <div style="padding:0 12px 16px;">
+            <button class="btn btn-primary">Xác nhận đặt món →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ 5. QR CONFIRM ══════════════ -->
+    <div>
+      <div class="phone-label">5 · QR xác nhận lấy đồ ăn</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>11:02</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="topbar">
+          <div class="back-btn">←</div>
+          <div class="topbar-title">Đơn của tôi</div>
+        </div>
+        <div class="screen-body" style="background:white;">
+          <div style="padding:16px 16px 8px; text-align:center;">
+            <span class="badge badge-warning" style="font-size:12px; padding:4px 12px;">⏳ Chờ lấy · 11:00 – 11:30</span>
+          </div>
+
+          <div class="qr-area" style="margin:0 12px; box-shadow:none; border:1px solid var(--gray-200);">
+            <div style="font-size:12px; color:var(--gray-500); margin-bottom:4px;">Xuất trình QR này tại quầy</div>
+            <div class="qr-box">▦</div>
+            <div class="qr-code-text">A0012·5831</div>
+            <div class="qr-expires">⏱ Hết hạn lúc 11:45</div>
+          </div>
+
+          <div style="margin:12px;">
+            <div style="font-size:12px; font-weight:700; color:var(--gray-700); margin-bottom:8px;">Chi tiết đơn</div>
+            <div class="order-summary">
+              <div class="summary-row">
+                <span>🍜 Bún bò Huế</span>
+                <span>30.000₫</span>
+              </div>
+              <div class="summary-row" style="font-size:11px; color:var(--gray-500);">
+                <span>Khung giờ lấy</span>
+                <span>11:00 – 11:30</span>
+              </div>
+              <div class="summary-row" style="font-size:11px; color:var(--gray-500);">
+                <span>Mã đơn</span>
+                <span>#ORD-20260911-0042</span>
+              </div>
+              <div class="summary-row total">
+                <span>Tổng cộng</span>
+                <span style="color:var(--primary);">30.000₫</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:0 12px 16px; display:flex; gap:8px;">
+            <button class="btn btn-outline" style="flex:1; font-size:13px;">Hủy đơn</button>
+            <button class="btn btn-primary" style="flex:2; font-size:13px;">📲 Lưu QR</button>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="nav-icon">🏠</span>Trang chủ</div>
+          <div class="nav-item"><span class="nav-icon">🍽️</span>Menu</div>
+          <div class="nav-item active"><span class="nav-icon">📋</span>Đơn của tôi</div>
+          <div class="nav-item"><span class="nav-icon">👤</span>Tài khoản</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ 6. HISTORY ══════════════ -->
+    <div>
+      <div class="phone-label">6 · Lịch sử giao dịch</div>
+      <div class="phone-frame">
+        <div class="status-bar"><span>9:41</span><span>▪▪▪ ✦ 🔋</span></div>
+        <div class="topbar">
+          <div class="back-btn">←</div>
+          <div class="topbar-title">Lịch sử giao dịch</div>
+        </div>
+        <div class="screen-body">
+          <!-- Balance summary -->
+          <div style="background:white; padding:16px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gray-200);">
+            <div>
+              <div style="font-size:11px; color:var(--gray-500);">Số dư hiện tại</div>
+              <div style="font-size:24px; font-weight:700; color:var(--gray-900);">125.000 ₫</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px; color:var(--gray-500);">Tháng này</div>
+              <div style="font-size:14px; font-weight:600; color:var(--danger);">−150.000₫</div>
+            </div>
+          </div>
+
+          <!-- Filter tabs -->
+          <div style="display:flex; gap:8px; padding:10px 12px; background:white; border-bottom:1px solid var(--gray-200);">
+            <span class="badge badge-primary" style="cursor:pointer;">Tất cả</span>
+            <span class="badge badge-gray" style="cursor:pointer;">Nạp tiền</span>
+            <span class="badge badge-gray" style="cursor:pointer;">Đặt món</span>
+          </div>
+
+          <div style="padding:10px 0 4px; padding-left:12px; font-size:11px; font-weight:700; color:var(--gray-500); text-transform:uppercase; letter-spacing:.06em;">Hôm nay, 11/09</div>
+
+          <div class="txn-item">
+            <div class="txn-icon-wrap debit">🍜</div>
+            <div class="txn-info">
+              <div class="txn-name">Bún bò Huế (Pre-order)</div>
+              <div class="txn-date">11:05 · #ORD-0042 · Đã giao</div>
+            </div>
+            <div class="txn-amount debit">−30.000₫</div>
+          </div>
+
+          <div style="padding:8px 0 4px; padding-left:12px; font-size:11px; font-weight:700; color:var(--gray-500); text-transform:uppercase; letter-spacing:.06em;">Hôm qua, 10/09</div>
+
+          <div class="txn-item">
+            <div class="txn-icon-wrap credit">💰</div>
+            <div class="txn-info">
+              <div class="txn-name">Nạp tiền</div>
+              <div class="txn-date">08:30 · Nhân viên: Trần B</div>
+            </div>
+            <div class="txn-amount credit">+200.000₫</div>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon-wrap debit">🍚</div>
+            <div class="txn-info">
+              <div class="txn-name">Cơm gà nướng (Walk-in)</div>
+              <div class="txn-date">12:10 · #ORD-0038 · Đã giao</div>
+            </div>
+            <div class="txn-amount debit">−35.000₫</div>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon-wrap debit">🍲</div>
+            <div class="txn-info">
+              <div class="txn-name">Phở bò tái (Pre-order)</div>
+              <div class="txn-date">11:00 · #ORD-0035 · Đã giao</div>
+            </div>
+            <div class="txn-amount debit">−35.000₫</div>
+          </div>
+
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="nav-icon">🏠</span>Trang chủ</div>
+          <div class="nav-item"><span class="nav-icon">🍽️</span>Menu</div>
+          <div class="nav-item"><span class="nav-icon">📋</span>Đơn của tôi</div>
+          <div class="nav-item active"><span class="nav-icon">👤</span>Tài khoản</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end screens-grid -->
+</div><!-- end page-wrapper -->
+</body>
+</html>
