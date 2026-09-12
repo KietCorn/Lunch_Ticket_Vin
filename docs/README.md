@@ -55,6 +55,8 @@ Designed the entity-relationship diagram from the 9 core entities in `usecase.md
 
 **Pipeline now consistent end to end:** `usecase.md` → `erd.md` / `schema.dbml` → `app/models.py` → `schema.sql`
 
+![ERD](ERD.png)
+
 ---
 
 ## 5. Sequence Diagram Guide — `sequence-diagram-guide.md`
@@ -67,7 +69,13 @@ This is a **self-guided method, not a finished diagram** — written so the sequ
 - A shortlist of 5 use cases worth diagramming next (UC-S03, UC-S04, UC-C02, UC-C03, UC-K02), each with participants pre-identified and hints, arrows left as the exercise
 - A self-review checklist before calling a diagram done
 
-**Convention going forward:** finished sequence diagrams should be saved as `docs/sequence-<use-case-id>.md` (e.g. `docs/sequence-uc-s03.md`) — none exist yet as of this session.
+**Convention going forward:** finished sequence diagrams should be saved as `docs/sequence-<use-case-id>.md` (e.g. `docs/sequence-uc-s03.md`).
+
+**Drawn so far — UC-S04 Cancel Pre-Order:**
+
+![UC-S04 Sequence Diagram](UC-S04.png)
+
+> Note: currently only the rendered image is checked in (`docs/UC-S04.png`); the Mermaid source hasn't been saved as `docs/sequence-uc-s04.md` yet — do that next so it's editable and traceable like the other diagrams.
 
 ---
 
@@ -85,6 +93,26 @@ Key findings, called out explicitly so they aren't mistaken for documentation ov
 
 ---
 
+## 7. Wireframes — reference for the mentor
+
+Static design reference screens, predating this session's docs work but included here so the whole visual story is in one place. Live, clickable versions are in `wireframes/<role>/index.html` (open directly in a browser, no server needed).
+
+**Student flow** — live and wired to the API (`frontend/student/index.html`), wireframe below is the original design reference:
+
+![Student Wireframe](wireframe-student.png)
+
+**Staff POS** — static wireframe only, not yet wired to the API:
+
+![Staff Wireframe](wireframe-staff.png)
+
+**Kitchen display** — static wireframe only; the real SSE stream (`GET /api/kitchen/stream`) is live and working, just not yet wired into this screen:
+
+![Kitchen Wireframe](wireframe-kitchen.png)
+
+**Admin** — deferred, no wireframe exists yet (see the confirmed backend gap in §6 above).
+
+---
+
 ## Files in this session
 
 | File | Description |
@@ -96,13 +124,17 @@ Key findings, called out explicitly so they aren't mistaken for documentation ov
 | `docs/schema.dbml` | dbdiagram.io schema (kept in sync with models.py) |
 | `docs/schema.sql` | Generated `CREATE TABLE` statements from `app/models.py` |
 | `docs/sequence-diagram-guide.md` | Self-guided method for designing sequence diagrams |
+| `docs/UC-S04.png` | Rendered UC-S04 (Cancel Pre-Order) sequence diagram — image only, Mermaid source not yet saved |
 | `docs/api-mapping.md` | Use case / sequence diagram → real endpoint traceability, plus confirmed backend gaps |
+| `docs/ERD.png` | Rendered ERD image, matches `erd.md` |
+| `docs/wireframe-student.png` / `-staff.png` / `-kitchen.png` | Static design references for each role |
 
 ---
 
 ## Open items / not yet done
 
-- [ ] Sequence diagrams themselves (`docs/sequence-uc-*.md`) — guide exists, diagrams don't yet
+- [ ] Save UC-S04's Mermaid source as `docs/sequence-uc-s04.md` (image exists, source doesn't)
+- [ ] Remaining sequence diagrams from the guide's shortlist: UC-S03, UC-C02, UC-C03, UC-K02
 - [ ] State Machine Diagram for `Order` lifecycle — discussed, not started
 - [ ] Backfill BR-04 (cancellation deadline) into `usecase.md` UC-S04
 - [ ] Admin backend implementation — confirmed missing, not scoped yet
