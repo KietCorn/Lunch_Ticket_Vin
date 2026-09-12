@@ -153,9 +153,9 @@ System boundary: Lunch Card System
 |---|---|
 | **Actor** | Counter Staff |
 | **Precondition** | Staff is logged in; student presents QR code; `qr_token` is valid and not expired; order `status = pending` |
-| **Main Flow** | 1. Staff scans QR code. 2. System looks up `qr_token` → finds matching order. 3. System sets `status = delivered`. 4. POS shows order details and student name as confirmation. |
-| **Alt Flow** | 2a. Token not found or expired → POS shows error; staff handles manually. 2b. Order already `delivered` → POS shows "Already collected". |
-| **Postcondition** | Order status is `delivered`; balance was already deducted at pre-order time (no second deduction). |
+| **Main Flow** | 1. Staff scans QR code. 2. System looks up `qr_token` → finds matching order. 3. System sets `status = delivered`, `source = qr_scan`, and `delivered_by = <staff.id>`. 4. POS shows order details and student name as confirmation. |
+| **Alt Flow** | 2a. Token not found or expired → POS shows error; staff confirms manually by student ID, system sets `source = manual_entry` instead. 2b. Order already `delivered` → POS shows "Already collected". |
+| **Postcondition** | Order status is `delivered`; `delivered_by` records which staff member confirmed pickup; balance was already deducted at pre-order time (no second deduction). |
 
 ---
 
@@ -164,7 +164,7 @@ System boundary: Lunch Card System
 |---|---|
 | **Actor** | Counter Staff |
 | **Precondition** | Staff is logged in; student is present at counter; selected menu item has `available_quantity > 0` |
-| **Main Flow** | 1. Staff searches for student (by student ID or card scan). 2. Staff selects menu item and timeslot → confirms. 3. System checks balance ≥ price (UC-SYS02). 4. System atomically: deducts balance, appends transaction (UC-SYS01), decrements quantity (UC-SYS04), creates order with `order_type = walk_in` and `status = pending`. 5. POS shows success; order appears in walk-in queue on kitchen display. |
+| **Main Flow** | 1. Staff searches for student (by student ID or card scan). 2. Staff selects menu item and timeslot → confirms. 3. System checks balance ≥ price (UC-SYS02). 4. System atomically: deducts balance, appends transaction (UC-SYS01), decrements quantity (UC-SYS04), creates order with `order_type = walk_in`, `status = pending`, `timeslot_id` (denormalized for fast queue queries), and `placed_by_staff = <staff.id>`. 5. POS shows success; order appears in walk-in queue on kitchen display. |
 | **Alt Flow** | 3a. Insufficient balance → POS shows error; staff informs student to top up. 3b. Sold out → POS blocks selection. |
 | **Postcondition** | Walk-in order exists in a **separate queue** from pre-orders. |
 | **Non-negotiable** | Walk-in queue and pre-order queue are **never merged**. |
@@ -176,7 +176,7 @@ System boundary: Lunch Card System
 |---|---|
 | **Actor** | Counter Staff |
 | **Precondition** | Staff is logged in; student is present with cash or voucher |
-| **Main Flow** | 1. Staff searches for student. 2. Staff enters top-up amount. 3. System appends a `top_up` transaction (UC-SYS01) and increases `accounts.balance`. 4. POS and student app show new balance. |
+| **Main Flow** | 1. Staff searches for student. 2. Staff enters top-up amount. 3. System appends a `top_up` transaction (UC-SYS01) recording `actor_id = <staff.id>` (who processed it) and increases `accounts.balance`. 4. POS and student app show new balance. |
 | **Postcondition** | Balance increased; transaction record appended. |
 
 ---
@@ -289,7 +289,7 @@ System boundary: Lunch Card System
 
 ### UC-SYS01 Append Transaction Record
 Triggered by: UC-S03, UC-S04, UC-C03, UC-C04.
-Atomically inserts one row into `transactions` with `transaction_type`, `amount`, and `balance_after` snapshot. **No UPDATE or DELETE ever runs on committed transaction rows.**
+Atomically inserts one row into `transactions` with `transaction_type`, `amount`, and `balance_after` snapshot. Deduction/refund rows link back to the triggering order via `reference_order` (null for top-ups). Rows created by staff (top-up) record `actor_id`; an optional `note` may be attached for audit context. **No UPDATE or DELETE ever runs on committed transaction rows.**
 
 ### UC-SYS02 Enforce Balance ≥ 0
 Triggered before every deduction. If `balance - price < 0`, the operation is rejected with an error. Balance never goes negative.

@@ -19,7 +19,7 @@ Wrote a full BA-style use case document covering all 5 actors and 26 use cases.
 
 Drew the full use case diagram on draw.io based on the specification above.
 
-![Use Case Diagram](Usecase_diagram.png)
+![Use Case Diagram](UseCase.jpg)
 
 **Actors in the diagram:**
 - Student — pre-order flow, QR, balance
@@ -44,6 +44,19 @@ Study notes written for reference, covering:
 
 ---
 
+## 4. ERD & Schema — `erd.md`, `schema.dbml`, `schema.sql`
+
+Designed the entity-relationship diagram from the 9 core entities in `usecase.md`, then synced it against the actual `app/models.py` implementation to eliminate drift.
+
+- `docs/erd.md` — Mermaid `erDiagram`, paste directly into mermaid.live; includes an FK-to-use-case mapping table
+- `docs/schema.dbml` — updated to match, for dbdiagram.io visualization
+- `docs/schema.sql` — generated directly from `app/models.py` via SQLAlchemy's `CreateTable`, so it can't drift from the running code
+- `usecase.md` updated (UC-C02, UC-C03, UC-C04, UC-SYS01) to document staff-accountability fields (`placed_by_staff`, `delivered_by`, `source`, `actor_id`, `reference_order`) that exist in code but were missing from the BA-level spec
+
+**Pipeline now consistent end to end:** `usecase.md` → `erd.md` / `schema.dbml` → `app/models.py` → `schema.sql`
+
+---
+
 ## Files in this session
 
 | File | Description |
@@ -51,3 +64,6 @@ Study notes written for reference, covering:
 | `docs/usecase.md` | Full use case specification (BA document) |
 | `docs/Usecase_diagram.png` | Use case diagram drawn on draw.io |
 | `docs/notes.md` | UML + UI/UX study notes |
+| `docs/erd.md` | Mermaid ERD + FK/use-case mapping table |
+| `docs/schema.dbml` | dbdiagram.io schema (kept in sync with models.py) |
+| `docs/schema.sql` | Generated `CREATE TABLE` statements from `app/models.py` |

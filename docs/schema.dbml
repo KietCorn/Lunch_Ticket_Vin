@@ -46,6 +46,9 @@ Table transactions {
   transaction_type varchar(10) [not null, note: 'top_up | deduction | refund']
   amount           numeric(10,0) [not null, note: 'Positive = credit, negative = debit']
   balance_after    numeric(10,0) [not null, note: 'Snapshot of balance after this transaction']
+  reference_order  integer    [null, ref: > orders.id, note: 'The order that triggered this deduction/refund. Null for top-ups.']
+  actor_id         integer    [null, ref: > staff.id, note: 'Staff member who processed a top-up. Null for student-triggered rows.']
+  note             text       [null, note: 'Optional audit note']
   created_at       datetime   [not null]
 
   note: 'Append-only. No UPDATE or DELETE on committed rows. Every balance change writes one row atomically.'
@@ -89,11 +92,15 @@ Table orders {
   id              integer    [pk, increment]
   student_id      integer    [not null, ref: > students.id]
   daily_menu_id   integer    [not null, ref: > daily_menu.id]
+  timeslot_id     integer    [not null, ref: > timeslots.id, note: 'Denormalized from daily_menu for fast kitchen-queue queries']
   order_type      varchar(10) [not null, note: 'pre_order | walk_in — immutable after creation']
   status          varchar(10) [not null, note: 'pending | ready | delivered | cancelled']
+  source          varchar(12) [null, note: 'qr_scan | manual_entry — set when staff confirms delivery']
   amount_charged  numeric(10,0) [not null]
   qr_token        varchar(50) [unique, null, note: 'Null for walk-in. Format: CARD·XXXX']
   qr_expires_at   datetime   [null, note: 'QR_EXPIRY_MINUTES after timeslot start. Null for walk-in.']
+  placed_by_staff integer    [null, ref: > staff.id, note: 'Staff who created a walk-in order. Null for pre-orders.']
+  delivered_by    integer    [null, ref: > staff.id, note: 'Staff who confirmed pickup']
   created_at      datetime   [not null]
   updated_at      datetime
 
