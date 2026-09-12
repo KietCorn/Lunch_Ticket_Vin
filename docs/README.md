@@ -1,6 +1,6 @@
 # Session Work Log
 
-Work completed in this design/analysis session for the Student Lunch Card system.
+Work completed in this design/analysis session for the Student Lunch Card system. Sections are in the order the work was done, so this doubles as the pipeline: use case → ERD → sequence diagram → API traceability.
 
 ---
 
@@ -57,6 +57,34 @@ Designed the entity-relationship diagram from the 9 core entities in `usecase.md
 
 ---
 
+## 5. Sequence Diagram Guide — `sequence-diagram-guide.md`
+
+This is a **self-guided method, not a finished diagram** — written so the sequence diagrams themselves get designed by hand, not generated. Contains:
+
+- Mermaid sequence syntax cheat sheet (`->>`, `-->>`, `alt/opt/loop`, `activate/deactivate`)
+- A 5-step method: pick participants → walk the use case's Main Flow → convert Alt Flow to `alt`/`opt` → wrap returns → cross-check `<<include>>` system use cases show up as real messages
+- One fully worked example (UC-S01 Login, intentionally trivial)
+- A shortlist of 5 use cases worth diagramming next (UC-S03, UC-S04, UC-C02, UC-C03, UC-K02), each with participants pre-identified and hints, arrows left as the exercise
+- A self-review checklist before calling a diagram done
+
+**Convention going forward:** finished sequence diagrams should be saved as `docs/sequence-<use-case-id>.md` (e.g. `docs/sequence-uc-s03.md`) — none exist yet as of this session.
+
+---
+
+## 6. API Traceability — `api-mapping.md`
+
+Cross-checked every use case against the actual running code (`app/routers/*.py`, all 6 router files read directly) to catch drift between what's designed on paper and what's implemented. Swagger/OpenAPI (`/docs`) stays the source of truth for the contract itself; this file only maps **use case → real endpoint (method, path, router file)**.
+
+Key findings, called out explicitly so they aren't mistaken for documentation oversights:
+
+- **Admin backend gap:** UC-A02 through UC-A07 have zero implemented endpoints. `menu.py` only exposes `GET` routes; no CRUD exists for menu items, timeslots, daily menu, staff, or students, and no cross-student transaction report endpoint exists. Matches the root README's "Admin: Deferred" status, but this confirms it's a backend gap, not just a missing UI.
+- **UC-S01 Login divergence:** there is no separate student login endpoint. `POST /api/auth/login` is staff-only and reused as the demo stand-in, matching the documented limitation in the root `README.md`.
+- **UC-K02 Mark Ready** lives in `orders.py`, not `kitchen.py` — worth knowing before assuming otherwise in a sequence diagram.
+- **UC-SYS01** (append transaction) is duplicated three times across `orders.py`/`accounts.py` rather than a shared helper — noted for awareness, not flagged as something to fix.
+- UC-S04's 30-minute cancellation deadline (BR-04) is enforced in code but not yet reflected in `usecase.md`'s precondition text — a small backfill still open.
+
+---
+
 ## Files in this session
 
 | File | Description |
@@ -67,3 +95,14 @@ Designed the entity-relationship diagram from the 9 core entities in `usecase.md
 | `docs/erd.md` | Mermaid ERD + FK/use-case mapping table |
 | `docs/schema.dbml` | dbdiagram.io schema (kept in sync with models.py) |
 | `docs/schema.sql` | Generated `CREATE TABLE` statements from `app/models.py` |
+| `docs/sequence-diagram-guide.md` | Self-guided method for designing sequence diagrams |
+| `docs/api-mapping.md` | Use case / sequence diagram → real endpoint traceability, plus confirmed backend gaps |
+
+---
+
+## Open items / not yet done
+
+- [ ] Sequence diagrams themselves (`docs/sequence-uc-*.md`) — guide exists, diagrams don't yet
+- [ ] State Machine Diagram for `Order` lifecycle — discussed, not started
+- [ ] Backfill BR-04 (cancellation deadline) into `usecase.md` UC-S04
+- [ ] Admin backend implementation — confirmed missing, not scoped yet
