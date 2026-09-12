@@ -28,12 +28,12 @@ Open `frontend/student/index.html` directly in your browser. Log in with `staff1
 
 ## Features
 
-| Actor | Status |
-|---|---|
-| Student frontend | Live — wired to API |
-| Staff POS | Static wireframe |
-| Kitchen display | Static wireframe (SSE stream ready at `/api/kitchen/stream`) |
-| Admin | Deferred |
+| Actor            | Status                                                        |
+| ---------------- | ------------------------------------------------------------- |
+| Student frontend | Live — wired to API                                          |
+| Staff POS        | Static wireframe                                              |
+| Kitchen display  | Static wireframe (SSE stream ready at`/api/kitchen/stream`) |
+| Admin            | Deferred                                                      |
 
 ## Design Principles
 
@@ -43,11 +43,11 @@ Open `frontend/student/index.html` directly in your browser. Log in with `staff1
 
 ## Demo Credentials
 
-| Username | Password | Role |
-|---|---|---|
-| admin | admin123 | Admin |
-| staff1 | staff123 | Counter staff |
-| staff2 | staff123 | Counter staff |
+| Username | Password | Role          |
+| -------- | -------- | ------------- |
+| admin    | admin123 | Admin         |
+| staff1   | staff123 | Counter staff |
+| staff2   | staff123 | Counter staff |
 
 ## Database
 
