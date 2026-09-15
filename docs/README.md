@@ -22,6 +22,7 @@ Drew the full use case diagram on draw.io based on the specification above.
 ![Use Case Diagram](UseCase.jpg)
 
 **Actors in the diagram:**
+
 - Student — pre-order flow, QR, balance
 - Staff — walk-in, QR confirm, top-up, card management
 - Admin — menu, timeslots, accounts, reports
@@ -73,7 +74,7 @@ This is a **self-guided method, not a finished diagram** — written so the sequ
 
 **Drawn so far — UC-S04 Cancel Pre-Order:**
 
-![UC-S04 Sequence Diagram](UC-S04.png)
+![UC-S04 Sequence Diagram](diagram/UC-S04.png)
 
 > Note: currently only the rendered image is checked in (`docs/UC-S04.png`); the Mermaid source hasn't been saved as `docs/sequence-uc-s04.md` yet — do that next so it's editable and traceable like the other diagrams.
 
@@ -99,15 +100,15 @@ Static design reference screens, predating this session's docs work but included
 
 **Student flow** — live and wired to the API (`frontend/student/index.html`), wireframe below is the original design reference:
 
-![Student Wireframe](wireframe-student.png)
+![Student Wireframe](wireframe/wireframe-student.png)
 
 **Staff POS** — static wireframe only, not yet wired to the API:
 
-![Staff Wireframe](wireframe-staff.png)
+![Staff Wireframe](wireframe/wireframe-staff.png)
 
 **Kitchen display** — static wireframe only; the real SSE stream (`GET /api/kitchen/stream`) is live and working, just not yet wired into this screen:
 
-![Kitchen Wireframe](wireframe-kitchen.png)
+![Kitchen Wireframe](wireframe/wireframe-kitchen.png)
 
 **Admin** — deferred, no wireframe exists yet (see the confirmed backend gap in §6 above).
 
@@ -115,19 +116,19 @@ Static design reference screens, predating this session's docs work but included
 
 ## Files in this session
 
-| File | Description |
-|---|---|
-| `docs/usecase.md` | Full use case specification (BA document) |
-| `docs/Usecase_diagram.png` | Use case diagram drawn on draw.io |
-| `docs/notes.md` | UML + UI/UX study notes |
-| `docs/erd.md` | Mermaid ERD + FK/use-case mapping table |
-| `docs/schema.dbml` | dbdiagram.io schema (kept in sync with models.py) |
-| `docs/schema.sql` | Generated `CREATE TABLE` statements from `app/models.py` |
-| `docs/sequence-diagram-guide.md` | Self-guided method for designing sequence diagrams |
-| `docs/UC-S04.png` | Rendered UC-S04 (Cancel Pre-Order) sequence diagram — image only, Mermaid source not yet saved |
-| `docs/api-mapping.md` | Use case / sequence diagram → real endpoint traceability, plus confirmed backend gaps |
-| `docs/ERD.png` | Rendered ERD image, matches `erd.md` |
-| `docs/wireframe-student.png` / `-staff.png` / `-kitchen.png` | Static design references for each role |
+| File                                                               | Description                                                                                     |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `docs/usecase.md`                                                | Full use case specification (BA document)                                                       |
+| `docs/Usecase_diagram.png`                                       | Use case diagram drawn on draw.io                                                               |
+| `docs/notes.md`                                                  | UML + UI/UX study notes                                                                         |
+| `docs/erd.md`                                                    | Mermaid ERD + FK/use-case mapping table                                                         |
+| `docs/schema.dbml`                                               | dbdiagram.io schema (kept in sync with models.py)                                               |
+| `docs/schema.sql`                                                | Generated`CREATE TABLE` statements from `app/models.py`                                     |
+| `docs/sequence-diagram-guide.md`                                 | Self-guided method for designing sequence diagrams                                              |
+| `docs/UC-S04.png`                                                | Rendered UC-S04 (Cancel Pre-Order) sequence diagram — image only, Mermaid source not yet saved |
+| `docs/api-mapping.md`                                            | Use case / sequence diagram → real endpoint traceability, plus confirmed backend gaps          |
+| `docs/ERD.png`                                                   | Rendered ERD image, matches`erd.md`                                                           |
+| `docs/wireframe-student.png` / `-staff.png` / `-kitchen.png` | Static design references for each role                                                          |
 
 ---
 

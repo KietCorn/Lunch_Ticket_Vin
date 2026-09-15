@@ -17,7 +17,7 @@ flowchart TB
     System[["Lunch Ticket System"]]
 
     Student -- "places pre-order / pays" --> System
-    Student -- "shows QR / views status & balance" --> System
+    Student -- "view QR / status& balance" --> System
 
     Staff -- "processes orders & payments" --> System
     Staff -- "manages student cards" --> System
