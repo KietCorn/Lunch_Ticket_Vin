@@ -1,0 +1,1109 @@
+openapi: 3.0.3
+info:
+  title: Lunch Ticket System API
+  description: >
+    First-pass working skeleton, not a final spec. Endpoints derived from
+    docs/investment/usecase.md and docs/investment/requirements.md, grouped
+    by the backend components in docs/architecture/c4/component.md and
+    docs/structure/backend.md. Schema field names are matched against the
+    live schema in lunchcard.db (repo root) since no ERD document
+    (docs/schema.dbml) exists yet — see docs/architecture/c4/container.md's
+    "ERD gap" note.
+
+    Gaps are marked inline with `# TBD:` comments rather than guessed at.
+    Student authentication mechanism itself is one such gap — CLAUDE.md
+    notes it isn't implemented yet (staff-only login exists today); the
+    /auth/login endpoint below is shaped for both actors but the student
+    auth flow is unconfirmed.
+  version: 0.1.0-draft
+servers:
+  - url: /api
+
+tags:
+  - name: Order Service
+    description: Pre-order/walk-in lifecycle, order queue, pickup confirmation. See docs/architecture/c4/component.md.
+  - name: Ledger Service
+    description: Balance, transactions, top-up, reporting. Deduct/Refund/Enforce Balance and Append Transaction Record are internal side-effects of other endpoints, not standalone routes — see notes on each endpoint that triggers them.
+  - name: Card & Fraud Service
+    description: Login, card issuance/lock, card verification, suspicious-usage detection, account (identity) management.
+  - name: Menu Service
+    description: Menu items, time slots, daily quantities, stock-out reporting.
+  - name: Notification Service
+    description: SSE stream — kitchen queue updates, stock-out alerts, QR lifecycle events (single shared channel, per ADR-3 in docs/architecture/arc42/arc42.md).
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ===================== Order Service =====================
+  /orders/pre-orders:
+    post:
+      tags: [Order Service]
+      summary: Place a pre-order
+      description: >
+        Implements UC6 Place Pre-Order (docs/investment/usecase.md).
+        Includes Deduct Balance and Append Transaction Record as atomic
+        side-effects (docs/investment/requirements.md Group 1) — this
+        endpoint fails as a whole if either sub-step fails.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlacePreOrderRequest'
+      responses:
+        '201':
+          description: Pre-order placed and paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/{orderId}/cancel:
+    post:
+      tags: [Order Service]
+      summary: Cancel a pre-order
+      description: >
+        Implements UC7 Cancel Pre-Order. Includes Refund Balance and Append
+        Transaction Record atomically. Refund percentage depends on the
+        cancellation-cutoff policy.
+        # TBD: refund percentage rule not finalized — docs/investment/requirements.md
+        # marks the cutoff hours (X) and post-cutoff refund percent (Y) as [TBD].
+        # CancelPreOrderResponse.refundPercent below is shaped but not yet computable.
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order cancelled and refund applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelPreOrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/{orderId}/confirm:
+    post:
+      tags: [Order Service]
+      summary: Confirm a pre-order at pickup (staff-side, QR scan)
+      description: >
+        Implements UC8 Confirm Pre-Order.
+        # TBD: docs/investment/requirements.md flags that the use case
+        # diagram shows this including Deduct Balance in addition to Place
+        # Pre-Order's own deduction — possible double-charge, unresolved.
+        # This endpoint currently assumes NO second deduction; revisit once
+        # that diagram question is answered.
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmPreOrderRequest'
+      responses:
+        '200':
+          description: Order confirmed as fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/walk-ins:
+    post:
+      tags: [Order Service]
+      summary: Create a walk-in order (staff-side)
+      description: >
+        Implements UC9 Create Walk-in Order. Includes Deduct Balance,
+        Enforce Balance, Available Quantity check, and Append Transaction
+        Record. Also includes card verification, which may surface a
+        suspicious-usage flag (UC22) — see Card & Fraud Service /cards/{cardToken}/verify.
+        Walk-in orders always go into a queue separate from pre-orders
+        (non-negotiable design principle) — see GET /orders/queue.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWalkinOrderRequest'
+      responses:
+        '201':
+          description: Walk-in order created and paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/{orderId}:
+    get:
+      tags: [Order Service]
+      summary: Get order status/detail
+      description: Implements UC3 View Order Status (detail view).
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /students/{studentId}/orders:
+    get:
+      tags: [Order Service]
+      summary: List a student's orders
+      description: Implements UC3 View Order Status (list view).
+      parameters:
+        - $ref: '#/components/parameters/StudentId'
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/queue:
+    get:
+      tags: [Order Service]
+      summary: View the live kitchen order queue
+      description: >
+        Implements UC18 View Order Queue. Pre-order and walk-in queues are
+        always returned as separate lists, never merged (non-negotiable
+        design principle). Real-time updates ride the shared SSE stream —
+        see GET /kitchen/stream (Notification Service).
+      responses:
+        '200':
+          description: Current queue, split by order type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  preOrders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  walkIns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders/{orderId}/ready:
+    post:
+      tags: [Order Service]
+      summary: Mark an order as ready for pickup
+      description: Implements UC19 Mark Order as Ready.
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order marked ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ===================== Ledger Service =====================
+  /students/{studentId}/balance:
+    get:
+      tags: [Ledger Service]
+      summary: Get a student's current balance
+      description: Implements UC4 View Balance & Transaction (balance part).
+      parameters:
+        - $ref: '#/components/parameters/StudentId'
+      responses:
+        '200':
+          description: Current balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /students/{studentId}/transactions:
+    get:
+      tags: [Ledger Service]
+      summary: Get a student's transaction history
+      description: Implements UC4 View Balance & Transaction (history part). Sourced from Append Transaction Record entries (docs/investment/requirements.md Group 1).
+      parameters:
+        - $ref: '#/components/parameters/StudentId'
+      responses:
+        '200':
+          description: Transaction history, chronological
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /students/{studentId}/topup:
+    post:
+      tags: [Ledger Service]
+      summary: Top up a student's balance (staff-side)
+      description: Implements UC12 Top Up Student Balance. Includes Append Transaction Record atomically.
+      parameters:
+        - $ref: '#/components/parameters/StudentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopUpRequest'
+      responses:
+        '200':
+          description: Updated balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /reports/transactions:
+    get:
+      tags: [Ledger Service]
+      summary: Aggregated transaction report (admin)
+      description: Implements UC17 View Transaction Report. Kept brief — simple read endpoint, no deep edge-case schema needed.
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Transactions in range
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ===================== Card & Fraud Service =====================
+  /auth/login:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Log in (Student, Counter Staff, or Admin)
+      description: >
+        Implements UC1 Login.
+        # TBD: student auth mechanism not implemented yet (CLAUDE.md demo
+        # limitation — only staff login exists today: staff1/staff123).
+        # Request/response shape below is a best-guess placeholder for both actors.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /students/{studentId}/cards:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Issue a new card to a student
+      description: >
+        Implements UC10 Create Student Card. If replacing a lost card, the
+        old card should be locked as part of the same staff workflow (see
+        POST /cards/{cardId}/lock) — balance is never reset (non-negotiable
+        design principle, since balance lives on Account, not Card).
+      parameters:
+        - $ref: '#/components/parameters/StudentId'
+      responses:
+        '201':
+          description: Card issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /cards/{cardId}/lock:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Lock a card
+      description: Implements UC11 Lock Student Card. Does not affect the linked Account's balance.
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Card locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /cards/{cardToken}/verify:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Verify a card for payment (scan)
+      description: >
+        Supports the "include: verify card" relationship from Order Service
+        (docs/architecture/c4/component.md). Also carries the UC22 Detect
+        Suspicious Card Usage `<<extend>>` — see `suspicious` field below.
+        # TBD: fraud thresholds not finalized — docs/investment/requirements.md
+        # marks (a) the time window for same-card-different-terminal detection
+        # and (b) the consecutive-failed-scan lock threshold as [TBD]. The
+        # `suspicious`/`reason` fields are shaped but not yet computable
+        # against a real rule.
+      parameters:
+        - name: cardToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardVerifyResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /admin/students:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Create or edit a student account (identity)
+      description: >
+        Implements UC16 Manage Accounts (student side). Kept brief.
+        Note: "account" here means the student's *identity* record
+        (students table), not the ledger Account (balance) schema used by
+        Ledger Service — same word, two different entities in the DB
+        schema. Flagging the naming collision rather than silently picking one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '201':
+          description: Student created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /admin/staff:
+    post:
+      tags: [Card & Fraud Service]
+      summary: Create or edit a staff account (identity)
+      description: Implements UC16 Manage Accounts (staff side). Kept brief.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+      responses:
+        '201':
+          description: Staff account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ===================== Menu Service =====================
+  /menu/daily:
+    get:
+      tags: [Menu Service]
+      summary: Get today's (or a given date's) menu
+      description: Implements UC2 View Daily Menu. Kept brief.
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: timeslotId
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Daily menu entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyMenuEntry'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: [Menu Service]
+      summary: Set menu & quantities for a date/timeslot (admin)
+      description: Implements UC15 Set Menu & Quantities. Kept brief.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyMenuEntry'
+      responses:
+        '201':
+          description: Daily menu entry created/updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyMenuEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /menu/items:
+    post:
+      tags: [Menu Service]
+      summary: Create a menu item (admin)
+      description: Implements UC13 Manage Menu Item. Kept brief.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '201':
+          description: Menu item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /menu/items/{menuItemId}:
+    patch:
+      tags: [Menu Service]
+      summary: Edit or deactivate a menu item (admin)
+      description: Implements UC13 Manage Menu Item. Kept brief.
+      parameters:
+        - name: menuItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '200':
+          description: Menu item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /menu/timeslots:
+    post:
+      tags: [Menu Service]
+      summary: Create a menu time slot (admin)
+      description: Implements UC14 Manage Menu Time Slots. Kept brief.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Timeslot'
+      responses:
+        '201':
+          description: Time slot created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeslot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /menu/daily/{dailyMenuId}/report-out-of-stock:
+    post:
+      tags: [Menu Service]
+      summary: Report a daily menu item as out of stock (kitchen)
+      description: >
+        Implements UC20 Report Item Out of Stock. Sets available quantity
+        to zero, triggers Refund Balance for every affected pre-order
+        (resolution confirmed as **auto-refund**, not auto-substitute or
+        manual — docs/investment/requirements.md), and triggers Receive
+        Stock-Out Notification (UC21) over the shared SSE channel.
+      parameters:
+        - name: dailyMenuId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Item marked out of stock; affected orders resolved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportOutOfStockResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ===================== Notification Service =====================
+  /kitchen/stream:
+    get:
+      tags: [Notification Service]
+      summary: SSE stream — order queue, stock-out alerts, QR lifecycle events
+      description: >
+        Single shared SSE channel (ADR-3, docs/architecture/arc42/arc42.md)
+        carrying: kitchen order-queue updates (UC18), stock-out
+        notifications (UC21), and QR expiry events (UC27 Expire QR, UC5
+        Show QR). Path kept as `/kitchen/stream` to match the endpoint
+        already named in CLAUDE.md, even though it now carries
+        student-facing events too — flagging this naming mismatch rather
+        than silently renaming an existing endpoint.
+        # TBD: Expire QR's exact expiry condition (time-based, one-time-use,
+        # or both — docs/investment/requirements.md) is not finalized, so the
+        # exact payload/timing of the qr_expired event below is provisional.
+      responses:
+        '200':
+          description: text/event-stream of notification events
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: >
+                  Server-Sent Events stream. Each event's `data` field is a
+                  JSON object shaped like NotificationEvent (see components/schemas).
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "# TBD: token issuance mechanism for Student actor unconfirmed — see /auth/login note."
+
+  parameters:
+    StudentId:
+      name: studentId
+      in: path
+      required: true
+      schema:
+        type: integer
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  responses:
+    BadRequest:
+      description: Invalid request (e.g. insufficient balance, insufficient stock, invalid state transition)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid credentials/session
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: INSUFFICIENT_BALANCE
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    # ---- Core entities — field names matched against lunchcard.db's live
+    # schema (sqlite3 lunchcard.db ".schema"), since no docs/schema.dbml
+    # ERD file exists yet. See docs/architecture/c4/container.md "ERD gap" note.
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        studentId:
+          type: string
+          description: External student ID (students.student_id), distinct from the internal `id`.
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Staff:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        fullName:
+          type: string
+        isAdmin:
+          type: boolean
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      description: password_hash intentionally excluded from API-facing schema.
+
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+        studentId:
+          type: integer
+        cardToken:
+          type: string
+        status:
+          type: string
+          enum: [active, locked]
+        issuedAt:
+          type: string
+          format: date-time
+        lockedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Account:
+      type: object
+      description: >
+        The ledger/balance record (accounts table) — NOT the same concept
+        as "account" in UC16 Manage Accounts (student/staff identity).
+        See the naming-collision note on POST /admin/students.
+      properties:
+        id:
+          type: integer
+        studentId:
+          type: integer
+        balance:
+          type: number
+          format: decimal
+          description: Never negative — enforced at the DB layer (CHECK balance >= 0) and by Enforce Balance.
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        accountId:
+          type: integer
+        transactionType:
+          type: string
+          enum: [deduct, refund, topup]
+        amount:
+          type: number
+          format: decimal
+        balanceAfter:
+          type: number
+          format: decimal
+        referenceOrder:
+          type: integer
+          nullable: true
+        actorId:
+          type: integer
+          nullable: true
+          description: Staff member who triggered this transaction, if any (e.g. top-up).
+        note:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: decimal
+        isActive:
+          type: boolean
+
+    Timeslot:
+      type: object
+      properties:
+        id:
+          type: integer
+        label:
+          type: string
+        startTime:
+          type: string
+          example: "11:00"
+        endTime:
+          type: string
+          example: "11:30"
+        sortOrder:
+          type: integer
+
+    DailyMenuEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        timeslotId:
+          type: integer
+        menuItemId:
+          type: integer
+        availableQuantity:
+          type: integer
+          description: Set to 0 by Report Item Out of Stock; never negative.
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        studentId:
+          type: integer
+        dailyMenuId:
+          type: integer
+        timeslotId:
+          type: integer
+        orderType:
+          type: string
+          enum: [pre_order, walk_in]
+        status:
+          type: string
+          enum: [pending, confirmed, ready, picked_up, cancelled]
+        source:
+          type: string
+          nullable: true
+        amountCharged:
+          type: number
+          format: decimal
+        qrToken:
+          type: string
+          nullable: true
+        qrExpiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        placedByStaff:
+          type: integer
+          nullable: true
+        deliveredBy:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ---- Request/response shapes ----
+
+    PlacePreOrderRequest:
+      type: object
+      required: [dailyMenuId, timeslotId]
+      properties:
+        dailyMenuId:
+          type: integer
+        timeslotId:
+          type: integer
+
+    ConfirmPreOrderRequest:
+      type: object
+      properties:
+        qrToken:
+          type: string
+          description: Presented at pickup; must be valid and not expired (Expire QR, UC27).
+
+    CreateWalkinOrderRequest:
+      type: object
+      required: [cardToken, dailyMenuId, timeslotId]
+      properties:
+        cardToken:
+          type: string
+        dailyMenuId:
+          type: integer
+        timeslotId:
+          type: integer
+
+    CancelPreOrderResponse:
+      type: object
+      properties:
+        order:
+          $ref: '#/components/schemas/Order'
+        refundAmount:
+          type: number
+          format: decimal
+        refundPercent:
+          type: number
+          description: "# TBD: refund percentage rule not finalized (cutoff hours X, post-cutoff percent Y — docs/investment/requirements.md)."
+
+    TopUpRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          format: decimal
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+          enum: [student, staff, admin]
+
+    CardVerifyResult:
+      type: object
+      properties:
+        card:
+          $ref: '#/components/schemas/Card'
+        valid:
+          type: boolean
+        suspicious:
+          type: boolean
+          description: "# TBD: fraud detection thresholds not finalized (same-card-different-terminal time window; consecutive failed-scan lock count — docs/investment/requirements.md)."
+        reason:
+          type: string
+          nullable: true
+
+    ReportOutOfStockResult:
+      type: object
+      properties:
+        dailyMenuEntry:
+          $ref: '#/components/schemas/DailyMenuEntry'
+        affectedOrdersRefunded:
+          type: integer
+        studentsNotified:
+          type: integer
+
+    NotificationEvent:
+      type: object
+      description: Shape of each SSE `data` payload on GET /kitchen/stream.
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [queue_updated, stock_out, qr_expired]
+        payload:
+          type: object
+          additionalProperties: true
