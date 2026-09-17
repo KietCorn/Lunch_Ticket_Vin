@@ -23,7 +23,7 @@ LunchTicket.Api/
 ├── Data/
 │   └── AppDbContext.cs               # [bootstrap] EF Core DbContext — SQLite provider, Code-First
 │
-├── Models/                          # [Data Access layer] EF Core entities — mirrors lunchcard.db schema, see docs/architecture/erd.md
+├── Models/                          # [Data Access layer] EF Core entities — mirrors lunchcard.db schema, see docs/api/erd.md
 │   ├── Student.cs                    # students, accounts, cards tables
 │   ├── Staff.cs                      # staff table
 │   ├── Menu.cs                       # menu_items, timeslots, daily_menu tables
@@ -76,4 +76,4 @@ Root namespace is `LunchTicket.Api`, with one sub-namespace per folder (`LunchTi
 
 - This is a structural target — no backend code exists yet on this branch (see `CLAUDE.md` Current State). An earlier, unrelated prototype on the `main` branch used a flat Python/FastAPI structure with business logic inside routers; that code was not reused (see `CLAUDE.md` Business Rules section for what was carried forward from it in words only). This .NET layout starts with the 3-tier separation from day one rather than migrating from a flat state.
 - The `[TBD]` business rules from `docs/investment/requirements.md` (cancellation refund cutoff/%, fraud-detection thresholds, QR expiry rule) live inside `LedgerService` / `CardFraudService` / `NotificationService` respectively once decided — no placeholder logic is implied by this structure.
-- The ERD gap this doc originally flagged is now filled — see `docs/architecture/erd.md` and `docs/schema.dbml`. `Models/` above should mirror that schema via EF Core Code-First entities and migrations.
+- The ERD gap this doc originally flagged is now filled — see `docs/api/erd.md` and `docs/api/schema.dbml`. `Models/` above should mirror that schema via EF Core Code-First entities and migrations.

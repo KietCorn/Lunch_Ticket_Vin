@@ -1,6 +1,6 @@
 # Endpoint Atomicity — Ordered Step Breakdown
 
-`docs/openapi.yaml` names which sub-steps each multi-step endpoint "includes" (e.g. "Includes Deduct Balance and Append Transaction Record") but not the *order* they run in or which ones can independently fail. This file fills that one gap — it does not duplicate request/response shapes, which stay in `docs/openapi.yaml`, or message-by-message actor/component flow, which stays in `docs/architecture/sequence-diagram-guide.md`.
+`docs/api/openapi.yaml` names which sub-steps each multi-step endpoint "includes" (e.g. "Includes Deduct Balance and Append Transaction Record") but not the *order* they run in or which ones can independently fail. This file fills that one gap — it does not duplicate request/response shapes, which stay in `docs/api/openapi.yaml`, or message-by-message actor/component flow, which stays in `docs/architecture/sequence-diagram-guide.md`.
 
 Adapted from an earlier prototype's `docs/api-mapping.md` (endpoint paths and UC IDs renumbered to match this branch's `docs/investment/usecase.md`, UC1–UC28; no code reused — see `CLAUDE.md` Business Rules). Regenerate this only when an endpoint's step order actually changes — it's a snapshot, not a contract.
 
@@ -33,7 +33,7 @@ Mirror of Place Pre-Order; steps 2–4 are atomic together.
 2. Check order isn't already confirmed/delivered — reject if so.
 3. Mark the order fulfilled.
 
-**Open question carried from `docs/openapi.yaml`**: the use-case diagram shows this step *possibly* including a second Deduct Balance call in addition to Place Pre-Order's own deduction (double-charge risk) — unresolved, not decided here. This endpoint's step list above assumes no second deduction.
+**Open question carried from `docs/api/openapi.yaml`**: the use-case diagram shows this step *possibly* including a second Deduct Balance call in addition to Place Pre-Order's own deduction (double-charge risk) — unresolved, not decided here. This endpoint's step list above assumes no second deduction.
 
 ### `POST /orders/walk-ins` — UC9 Create Walk-in Order
 1. Verify card (`POST /cards/{cardToken}/verify`) — may surface a suspicious-usage flag (UC22, thresholds **[TBD]**).

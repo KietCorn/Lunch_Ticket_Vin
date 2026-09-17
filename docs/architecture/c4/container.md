@@ -60,7 +60,7 @@ flowchart TB
 - `cards` — separate table from `accounts`, linked only by `student_id`, with its own `status`/`locked_at` — the physical structure that makes "money decoupled from the card" enforceable rather than just a stated principle.
 - `orders` — carries `qr_token`/`qr_expires_at` directly, which is what Show QR / Expire QR (Group 3) map onto.
 
-**ERD gap**: closed — `docs/architecture/erd.md` and `docs/schema.dbml` now document the canonical ERD, matching `lunchcard.db`'s live schema.
+**ERD gap**: closed — `docs/api/erd.md` and `docs/api/schema.dbml` now document the canonical ERD, matching `lunchcard.db`'s live schema.
 
 ## SSE channel reuse
 

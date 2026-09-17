@@ -10,21 +10,21 @@ No technology names appear at this level — only the system as a whole and the 
 
 ```mermaid
 flowchart TB
-    Student[Student]
+    Guest[Guest]
     Staff[Counter Staff]
     Kitchen[Kitchen]
     Admin[Admin]
 
     System(["Lunch Ticket System<br/>(single canteen, single school)"])
 
-    Student -- "logs in; browses daily menu; places &amp; cancels pre-orders;<br/>shows QR to confirm pickup; views order status,<br/>balance &amp; transaction history; receives stock-out notifications" --> System
-    Staff -- "logs in; confirms pre-orders; creates walk-in orders;<br/>issues &amp; locks student cards; tops up balances;<br/>handles suspicious card-usage alerts" --> System
+    Guest -- "logs in; browses daily menu; places & cancels pre-orders;<br/>shows QR to confirm pickup; views order status,<br/>balance & transaction history; receives stock-out notifications" --> System
+    Staff -- "logs in; confirms pre-orders; creates walk-in orders;<br/>issues & locks Guest cards; tops up balances;<br/>handles suspicious card-usage alerts" --> System
     Kitchen -- "views live order queue (pre-order + walk-in, kept separate);<br/>marks orders ready; reports items out of stock" --> System
-    Admin -- "logs in; manages menu items, time slots &amp; quantities;<br/>manages accounts; views transaction reports" --> System
+    Admin -- "logs in; manages menu items, time slots & quantities;<br/>manages accounts; views transaction reports" --> System
 
     classDef actor fill:#dbeafe,stroke:#1d4ed8,stroke-width:1px,color:#1e3a8a;
     classDef system fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f;
-    class Student,Staff,Kitchen,Admin actor;
+    class Guest,Staff,Kitchen,Admin actor;
     class System system;
 ```
 

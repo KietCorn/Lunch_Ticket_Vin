@@ -17,13 +17,13 @@ architecture/
 ## Reading order
 
 1. **`c4/context.md`** — start here for the big picture: who (Student, Counter Staff, Kitchen, Admin) talks to the system and why.
-2. **`c4/container.md`** — zooms in one level: the actual frontends, the ASP.NET Core Web API backend, SQLite (via Entity Framework Core), and how the ledger design shows up in the live DB schema (`lunchcard.db`, now also documented in `docs/architecture/erd.md` / `docs/schema.dbml`).
+2. **`c4/container.md`** — zooms in one level: the actual frontends, the ASP.NET Core Web API backend, SQLite (via Entity Framework Core), and how the ledger design shows up in the live DB schema (`lunchcard.db`, now also documented in `docs/api/erd.md` / `docs/api/schema.dbml`).
 3. **`c4/component.md`** — zooms in again, inside the Backend API only: Order Service, Ledger Service, Card & Fraud Service, Menu Service, Notification Service, with the reasoning for each grouping and a full use-case traceability table.
 4. **`arc42/arc42.md`** — the full narrative document. Sections 3, 5, and 6 point back to the C4 diagrams above rather than duplicating them; section 9 records the three architecture decisions already made (ledger decoupled from card, queues never merged, one SSE channel reused); sections 1, 2, and 10 are filled in from direct answers on goals/constraints/quality; sections 4, 7, 8, 11, and 12 are left as placeholders — not yet in scope.
 
 ## Known gaps (tracked, not hidden)
 
-- ERD is now documented (`docs/architecture/erd.md` + `docs/schema.dbml`) — Arc42 §5's "no ERD" note is stale until that section is updated to point at it.
+- ERD is now documented (`docs/api/erd.md` + `docs/api/schema.dbml`) — Arc42 §5's "no ERD" note is stale until that section is updated to point at it.
 - A sequence-diagram method + one worked example now exists (`docs/architecture/sequence-diagram-guide.md`) — Arc42 §6 still describes this as an open gap and hasn't been updated to reference it.
 - The Admin Back-office frontend isn't built yet (wireframes deferred per `CLAUDE.md`), though its use cases and container are modeled here.
 - Three `[TBD]` business-rule values from `docs/investment/requirements.md` (cancellation refund cutoff/%, fraud-detection window/threshold, QR expiry rule) and one peak-concurrency number (Arc42 §10) remain unresolved — none are invented here.

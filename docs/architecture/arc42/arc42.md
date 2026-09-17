@@ -49,7 +49,7 @@ Pulled from `docs/architecture/c4/container.md` (Level 2) and `docs/architecture
 
 **Level 3 — Components of the Backend API**: Order Service, Ledger Service, Card & Fraud Service, Menu Service, Notification Service. Grouping rationale and full use-case traceability in `c4/component.md`.
 
-**Data model**: documented in `docs/architecture/erd.md` (ERD) and `docs/schema.dbml`, matching the live schema in `lunchcard.db` at the repo root.
+**Data model**: documented in `docs/api/erd.md` (ERD) and `docs/api/schema.dbml`, matching the live schema in `lunchcard.db` at the repo root.
 
 ## 6. Runtime View
 
