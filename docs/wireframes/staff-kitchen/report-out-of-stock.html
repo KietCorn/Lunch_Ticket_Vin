@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kitchen — Report Out of Stock</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">kitchen.lunchticket.local/report-stock</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍳 Kitchen Display</span>
+      <nav>
+        <a href="order-queue.html">Queue</a>
+        <a href="report-out-of-stock.html" class="active">Report Stock</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <h1 style="margin-bottom: var(--space-md);">Report an item out of stock</h1>
+
+      <div class="cols">
+        <div class="card card-elevated">
+          <div class="field">
+            <label for="item">Menu item</label>
+            <select id="item">
+              <option>Grilled Chicken Rice — 8 left</option>
+              <option>Vegetarian Noodles — 0 left</option>
+              <option>Beef Stir-fry — 15 left</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;">Report out of stock</button>
+          <p class="caption" style="margin-top: var(--space-sm);">Triggers UC28 Available Quantity → 0 and UC21 Receive Stock-Out Notification (Student overlay banner).</p>
+        </div>
+
+        <div class="card card-elevated">
+          <span class="caption">Already reported today</span>
+          <div class="row-between" style="margin-top: var(--space-sm);">
+            <div class="row"><div class="icon-badge muted">🍜</div><span>Vegetarian Noodles</span></div>
+            <span class="status-pill status-out-of-stock">Out of stock</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Report Out of Stock Screen</strong> — UC20 Report Item Out of Stock</p>
+    <p>Reached from: <a href="order-queue.html">Order Queue</a></p>
+    <p>Leads to on submit: <a href="order-queue.html">Order Queue</a></p>
+  </div>
+
+</div>
+</body>
+</html>

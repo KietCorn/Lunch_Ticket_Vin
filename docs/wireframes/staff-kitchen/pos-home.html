@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staff — POS / Orders Home</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">pos.lunchticket.local/home</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 POS</span>
+      <nav>
+        <a href="pos-home.html" class="active">POS Home</a>
+        <a href="student-lookup.html">Student Accounts</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <div class="hero row-between" style="margin-bottom: var(--space-lg);">
+        <div>
+          <span class="caption" style="color: var(--color-on-primary); opacity:.85;">Today's counter</span>
+          <h1 style="color: var(--color-on-primary);">3 pending pre-orders</h1>
+        </div>
+        <a class="btn" style="background: var(--color-on-primary); color: var(--color-primary); border: none;" href="create-walkin.html">+ New Walk-in Order</a>
+      </div>
+
+      <div class="row-between" style="margin-bottom: var(--space-sm);">
+        <strong>Pending pre-orders</strong>
+        <span class="badge-count">3</span>
+      </div>
+
+      <a class="card card-elevated list-row status-accent pending" href="confirm-preorder.html">
+        <div class="row">
+          <div class="icon-badge">🍗</div>
+          <div style="flex:1;">
+            <strong>Order #10432</strong> — Grilled Chicken Rice
+            <div class="caption">12:00–12:30 · Student SV0012345</div>
+          </div>
+          <span class="status-pill status-pending">Pending</span>
+        </div>
+      </a>
+
+      <a class="card card-elevated list-row status-accent pending" href="confirm-preorder.html">
+        <div class="row">
+          <div class="icon-badge">🥩</div>
+          <div style="flex:1;">
+            <strong>Order #10440</strong> — Beef Stir-fry
+            <div class="caption">12:00–12:30 · Student SV0019873</div>
+          </div>
+          <span class="status-pill status-pending">Pending</span>
+        </div>
+      </a>
+
+      <a class="card card-elevated list-row status-accent pending" href="confirm-preorder.html">
+        <div class="row">
+          <div class="icon-badge">🍗</div>
+          <div style="flex:1;">
+            <strong>Order #10441</strong> — Grilled Chicken Rice
+            <div class="caption">12:30–13:00 · Student SV0022310</div>
+          </div>
+          <span class="status-pill status-pending">Pending</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>POS / Orders Home Screen</strong> — Nav hub — not backed by a single use case (per ia-screens.md flag)</p>
+    <p>Reached from: <a href="login.html">Login</a></p>
+    <p>Leads to: <a href="confirm-preorder.html">Confirm Pre-Order</a> ("select pending order"); <a href="create-walkin.html">Create Walk-in Order</a> ("New Walk-in")</p>
+  </div>
+
+</div>
+</body>
+</html>

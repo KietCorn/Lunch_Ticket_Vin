@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student — Order Detail</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">student.lunchticket.local/orders/10432</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 Lunch Ticket</span>
+      <nav>
+        <a href="home-menu.html">Home</a>
+        <a href="my-orders.html" class="active">My Orders</a>
+        <a href="balance.html">Account</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <a href="my-orders.html" class="caption">‹ My Orders</a>
+      <h1 style="margin: var(--space-sm) 0 var(--space-md);">Order #10432</h1>
+
+      <div class="cols">
+        <div class="card card-elevated status-accent pending">
+          <div class="row-between">
+            <span class="caption">Status</span>
+            <span class="status-pill status-pending">Pending</span>
+          </div>
+          <div class="row" style="margin-top: var(--space-sm);">
+            <div class="icon-badge">🍗</div>
+            <div>
+              <strong style="font-size:16px;">Grilled Chicken Rice</strong>
+              <div class="caption">Timeslot 12:00–12:30</div>
+            </div>
+          </div>
+          <div class="row-between" style="margin-top: var(--space-sm); border-top: 1px solid var(--color-border); padding-top: var(--space-sm);">
+            <span class="caption">Item price</span>
+            <span>25,000₫</span>
+          </div>
+          <div class="row-between">
+            <span class="caption">Paid from balance</span>
+            <span>-25,000₫</span>
+          </div>
+          <div class="row-between">
+            <span class="caption">QR expires</span>
+            <span class="tbd-placeholder">[TBD] offset from timeslot start</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="card card-elevated">
+            <strong>Pickup</strong>
+            <p class="caption">Show your QR code to counter staff to confirm pickup.</p>
+            <a class="btn btn-primary" href="qr-display.html" style="display:block; text-align:center;">📷 Show QR</a>
+          </div>
+          <div class="card card-elevated">
+            <strong>Cancel</strong>
+            <p class="caption">Refund follows the cancellation cutoff rule.</p>
+            <a class="btn" href="cancel-confirm.html" style="display:block; text-align:center; color: var(--color-danger); border-color: var(--color-danger);">Cancel order</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Order Detail Screen</strong> — UC3 View Order Status (detail view); hub for QR/Cancel</p>
+    <p>Reached from: <a href="my-orders.html">My Orders</a>; <a href="order-placed.html">Order Placed Confirmation</a>; Stock-Out Alert (tap)</p>
+    <p>Leads to: <a href="qr-display.html">QR Display</a> ("Show QR"); <a href="cancel-confirm.html">Cancel Confirmation</a> ("Cancel order")</p>
+  </div>
+
+</div>
+</body>
+</html>

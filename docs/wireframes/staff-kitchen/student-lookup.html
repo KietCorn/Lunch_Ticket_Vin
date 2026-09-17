@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staff — Student Account Lookup</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">pos.lunchticket.local/students</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 POS</span>
+      <nav>
+        <a href="pos-home.html">POS Home</a>
+        <a href="student-lookup.html" class="active">Student Accounts</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <h1 style="margin-bottom: var(--space-md);">Student accounts</h1>
+
+      <div class="card card-elevated">
+        <div class="field" style="margin:0;">
+          <label for="search">Search by Student ID or name</label>
+          <input id="search" type="text" placeholder="SV0012345 or name" value="SV001">
+        </div>
+      </div>
+
+      <div class="card card-elevated" style="padding:0; overflow:hidden; margin-top: var(--space-md);">
+        <table class="data-table">
+          <thead>
+            <tr><th>Student</th><th>Balance</th><th>Card</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr class="clickable" onclick="location.href='student-account.html'">
+              <td><div class="row"><div class="avatar">🧑</div><strong>SV0012345 — Nguyen Van A</strong></div></td>
+              <td>120,000₫</td>
+              <td><span class="status-pill status-active">Active</span></td>
+              <td class="chevron">›</td>
+            </tr>
+            <tr class="clickable" onclick="location.href='student-account.html'">
+              <td><div class="row"><div class="avatar">🧑</div><strong>SV0011980 — Le Van C</strong></div></td>
+              <td>45,000₫</td>
+              <td><span class="status-pill status-locked">Locked</span></td>
+              <td class="chevron">›</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Student Account Lookup Screen</strong> — Supports UC10/UC11/UC12 (search step)</p>
+    <p>Reached from: Nav bar</p>
+    <p>Leads to on "select student": <a href="student-account.html">Student Account Detail</a></p>
+  </div>
+
+</div>
+</body>
+</html>

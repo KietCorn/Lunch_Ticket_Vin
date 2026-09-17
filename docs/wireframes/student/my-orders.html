@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student — My Orders</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">student.lunchticket.local/orders</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 Lunch Ticket</span>
+      <nav>
+        <a href="home-menu.html">Home</a>
+        <a href="my-orders.html" class="active">My Orders</a>
+        <a href="balance.html">Account</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <h1 style="margin-bottom: var(--space-md);">My Orders</h1>
+
+      <div class="card card-elevated" style="padding:0; overflow:hidden;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Item</th><th>Timeslot</th><th>Order #</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr class="clickable" onclick="location.href='order-detail.html'">
+              <td><div class="row"><div class="icon-badge">🍗</div><strong>Grilled Chicken Rice</strong></div></td>
+              <td>12:00–12:30</td>
+              <td class="caption">#10432</td>
+              <td><span class="status-pill status-pending">Pending</span></td>
+              <td class="chevron">›</td>
+            </tr>
+            <tr class="clickable" onclick="location.href='order-detail.html'">
+              <td><div class="row"><div class="icon-badge">🥩</div><strong>Beef Stir-fry</strong></div></td>
+              <td>12:30–13:00</td>
+              <td class="caption">#10440</td>
+              <td><span class="status-pill status-ready">Ready</span></td>
+              <td class="chevron">›</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" style="margin-top: var(--space-md);">
+        <span class="empty-icon">🍽️</span>
+        That's it for today — see you at the next meal!
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>My Orders Screen</strong> — UC3 View Order Status (list view)</p>
+    <p>Reached from: Nav bar; <a href="cancellation-result.html">Cancellation Result</a></p>
+    <p>Leads to on "select order row": <a href="order-detail.html">Order Detail</a></p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staff — Create Walk-in Order</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">pos.lunchticket.local/walk-in</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 POS</span>
+      <nav>
+        <a href="pos-home.html">POS Home</a>
+        <a href="student-lookup.html">Student Accounts</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <div class="alert-banner">
+        <span>⚠️ Suspicious Usage Alert (UC22): this card was just used at another terminal.</span>
+        <span class="dismiss">✕</span>
+      </div>
+
+      <h1 style="margin-bottom: var(--space-md);">New walk-in order</h1>
+
+      <div class="cols">
+        <div class="card card-elevated">
+          <div class="field">
+            <label for="card">Scan / enter card token</label>
+            <input id="card" type="text" placeholder="Card token" value="CARD-8827-XQ">
+          </div>
+          <div class="field">
+            <label for="item">Menu item</label>
+            <select id="item">
+              <option>Beef Stir-fry — 15 left — 30,000₫</option>
+              <option>Grilled Chicken Rice — 8 left — 25,000₫</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="qty">Quantity</label>
+            <input id="qty" type="text" value="1">
+          </div>
+        </div>
+
+        <div class="card card-elevated">
+          <div class="row">
+            <div class="avatar">🧑</div>
+            <div>
+              <strong>SV0018820 — Tran Thi B</strong>
+              <div class="caption">Current balance: 80,000₫</div>
+            </div>
+          </div>
+          <div class="row-between" style="margin-top: var(--space-sm); border-top: 1px solid var(--color-border); padding-top: var(--space-sm);">
+            <span class="caption">Total</span>
+            <strong>30,000₫</strong>
+          </div>
+          <div style="margin-top: var(--space-sm);">
+            <span class="caption">Balance check (UC26) and quantity decrement (UC28) run before payment:</span>
+            <div style="margin-top: var(--space-xs);">
+              <span class="status-pill status-balance-ok">Sufficient balance</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%; margin-top: var(--space-md);">Charge &amp; place order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Create Walk-in Order Screen</strong> — UC9 Create Walk-in Order</p>
+    <p>Reached from: <a href="pos-home.html">POS Home</a></p>
+    <p>Leads to on payment success: <a href="pos-home.html">POS Home</a></p>
+  </div>
+
+</div>
+</body>
+</html>

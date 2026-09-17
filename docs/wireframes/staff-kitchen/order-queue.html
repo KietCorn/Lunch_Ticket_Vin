@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kitchen — Order Queue</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">kitchen.lunchticket.local/queue</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍳 Kitchen Display</span>
+      <nav>
+        <a href="order-queue.html" class="active">Queue</a>
+        <a href="report-out-of-stock.html">Report Stock</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <div class="cols">
+        <div>
+          <div class="kanban-header">
+            <strong>Pre-Order Queue</strong>
+            <span class="badge-count">2</span>
+          </div>
+
+          <div class="card card-elevated status-accent pending">
+            <div class="row-between">
+              <div class="row">
+                <div class="icon-badge">🍗</div>
+                <div><strong>#10432</strong> Grilled Chicken Rice<div class="caption">12:00–12:30</div></div>
+              </div>
+              <span class="status-pill status-pending">Pending</span>
+            </div>
+            <div class="row-between" style="margin-top: var(--space-sm);">
+              <span class="tag">⏱ 3 min waiting</span>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top: var(--space-sm);">Mark Ready</button>
+          </div>
+
+          <div class="card card-elevated status-accent pending">
+            <div class="row-between">
+              <div class="row">
+                <div class="icon-badge">🍗</div>
+                <div><strong>#10441</strong> Grilled Chicken Rice<div class="caption">12:30–13:00</div></div>
+              </div>
+              <span class="status-pill status-pending">Pending</span>
+            </div>
+            <div class="row-between" style="margin-top: var(--space-sm);">
+              <span class="tag">⏱ 1 min waiting</span>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top: var(--space-sm);">Mark Ready</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="kanban-header">
+            <strong>Walk-in Queue</strong>
+            <span class="badge-count">2</span>
+            <span class="caption">(kept separate — principle #3)</span>
+          </div>
+
+          <div class="card card-elevated status-accent ready">
+            <div class="row-between">
+              <div class="row">
+                <div class="icon-badge">🥩</div>
+                <div><strong>#20015</strong> Beef Stir-fry</div>
+              </div>
+              <span class="status-pill status-ready">Ready</span>
+            </div>
+            <div class="row-between" style="margin-top: var(--space-sm);">
+              <span class="tag tag-success">✓ Ready 2 min ago</span>
+            </div>
+          </div>
+
+          <div class="card card-elevated status-accent pending">
+            <div class="row-between">
+              <div class="row">
+                <div class="icon-badge">🥩</div>
+                <div><strong>#20016</strong> Beef Stir-fry</div>
+              </div>
+              <span class="status-pill status-pending">Pending</span>
+            </div>
+            <div class="row-between" style="margin-top: var(--space-sm);">
+              <span class="tag">⏱ Just now</span>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top: var(--space-sm);">Mark Ready</button>
+          </div>
+        </div>
+      </div>
+
+      <a class="btn" href="report-out-of-stock.html">Report Out of Stock</a>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Order Queue Screen</strong> — UC18 View Order Queue, UC19 Mark Order as Ready (inline action)</p>
+    <p>Reached from: App entry (no login — shared display, per CLAUDE.md)</p>
+    <p>Leads to on "Report Out of Stock": <a href="report-out-of-stock.html">Report Out of Stock</a></p>
+  </div>
+
+</div>
+</body>
+</html>

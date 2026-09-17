@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student — Pre-Order Review</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">student.lunchticket.local/review</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 Lunch Ticket</span>
+      <nav>
+        <a href="home-menu.html">Home</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="balance.html">Account</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <a href="home-menu.html" class="caption">‹ Back to Menu</a>
+      <h1 style="margin: var(--space-sm) 0 var(--space-md);">Review your order</h1>
+
+      <div class="cols">
+        <div class="card card-elevated">
+          <div class="row">
+            <div class="icon-badge" style="width:64px; height:64px; font-size:26px;">🍗</div>
+            <div>
+              <strong style="font-size:16px;">Grilled Chicken Rice</strong>
+              <div class="caption">Timeslot: 12:00–12:30</div>
+              <div class="caption">Price: 25,000₫</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card card-elevated row-between">
+            <div>
+              <span class="caption">Current balance</span>
+              <div><strong>120,000₫</strong></div>
+            </div>
+            <span class="status-pill status-balance-ok">Sufficient balance</span>
+          </div>
+
+          <div class="card card-elevated" style="border-color: var(--color-danger);">
+            <span class="caption">If balance were too low, this row shows instead (never merged with "Out of stock"):</span>
+            <div class="row-between" style="margin-top: var(--space-xs);">
+              <strong>120,000₫</strong>
+              <span class="status-pill status-insufficient-balance">Insufficient balance</span>
+            </div>
+          </div>
+
+          <a class="btn btn-primary" href="order-placed.html" style="display:block; text-align:center;">Confirm &amp; Pay — 25,000₫</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Pre-Order Review Screen</strong> — UC6 Place Pre-Order (review step)</p>
+    <p>Reached from: <a href="home-menu.html">Home</a></p>
+    <p>Leads to on "confirm &amp; pay": <a href="order-placed.html">Order Placed Confirmation</a></p>
+  </div>
+
+</div>
+</body>
+</html>

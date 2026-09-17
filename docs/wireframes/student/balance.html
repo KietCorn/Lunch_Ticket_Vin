@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student — Balance &amp; Transaction</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="stage">
+
+  <div class="browser-frame">
+    <div class="browser-toolbar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">student.lunchticket.local/account</div>
+    </div>
+    <div class="top-nav">
+      <span class="app-title">🍱 Lunch Ticket</span>
+      <nav>
+        <a href="home-menu.html">Home</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="balance.html" class="active">Account</a>
+      </nav>
+    </div>
+    <div class="browser-content">
+      <h1 style="margin-bottom: var(--space-md);">Account</h1>
+
+      <div class="cols">
+        <div class="hero" style="text-align:center;">
+          <span class="caption" style="color: var(--color-on-primary); opacity:.85;">Current balance</span>
+          <h1 style="color: var(--color-on-primary); font-size:32px; margin: 4px 0 var(--space-sm);">120,000₫</h1>
+          <svg width="100%" height="40" viewBox="0 0 240 36" preserveAspectRatio="none" style="opacity:.9;">
+            <polyline points="0,28 30,24 60,30 90,14 120,20 150,8 180,16 210,6 240,12" fill="none" stroke="var(--color-on-primary)" stroke-width="2"/>
+          </svg>
+          <span class="caption" style="color: var(--color-on-primary); opacity:.85;">Last 7 days</span>
+        </div>
+
+        <div class="card card-elevated">
+          <strong>Student</strong>
+          <p class="caption">SV0012345 — Nguyễn Văn A</p>
+          <div class="row-between"><span class="caption">Card status</span><span class="status-pill status-active">Active</span></div>
+        </div>
+      </div>
+
+      <div class="row-between" style="margin: var(--space-lg) 0 var(--space-sm);">
+        <strong>Recent transactions</strong>
+      </div>
+
+      <div class="card card-elevated" style="padding:0; overflow:hidden;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Type</th><th>Description</th><th>Time</th><th>Balance after</th><th style="text-align:right;">Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="row"><div class="icon-badge muted" style="color: var(--color-danger);">↓</div>Deduction</div></td>
+              <td>Grilled Chicken Rice</td>
+              <td class="caption">11:45 AM</td>
+              <td class="caption">95,000₫</td>
+              <td style="text-align:right; color: var(--color-danger);"><strong>-25,000₫</strong></td>
+            </tr>
+            <tr>
+              <td><div class="row"><div class="icon-badge" style="color: var(--color-success);">↑</div>Refund</div></td>
+              <td>Cancelled order</td>
+              <td class="caption">Yesterday, 12:10 PM</td>
+              <td class="caption">120,000₫</td>
+              <td style="text-align:right; color: var(--color-success);"><strong>+25,000₫</strong></td>
+            </tr>
+            <tr>
+              <td><div class="row"><div class="icon-badge" style="color: var(--color-success);">↑</div>Top-up</div></td>
+              <td>by Counter Staff</td>
+              <td class="caption">2 days ago</td>
+              <td class="caption">145,000₫</td>
+              <td style="text-align:right; color: var(--color-success);"><strong>+100,000₫</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note wide">
+    <p><strong>Balance &amp; Transaction Screen</strong> — UC4 View Balance &amp; Transaction</p>
+    <p>Reached from: Nav bar</p>
+    <p>Leaf screen — no further navigation</p>
+    <p class="caption">Sparkline is illustrative chrome only — no trend-chart use case exists yet in requirements.md.</p>
+  </div>
+
+</div>
+</body>
+</html>

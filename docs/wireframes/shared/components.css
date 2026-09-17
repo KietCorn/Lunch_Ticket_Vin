@@ -1,0 +1,648 @@
+/* Shared component styles — see docs/design-system.md "Shared components" table.
+   If a style is reusable across screens, it belongs here, not inline in a screen file. */
+
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+/* .nav-bar — screen title + breadcrumb ("Reached from") + forward links ("Leads to") */
+.nav-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-bar .breadcrumb {
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+}
+
+.nav-bar .breadcrumb a {
+  color: var(--color-text-muted);
+}
+
+.nav-bar .use-case {
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+}
+
+.leads-to {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* .card */
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* .btn / .btn-primary — friendly pill-shaped buttons */
+.btn {
+  display: inline-block;
+  font-family: var(--font-family);
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* .status-pill — filled chip (soft tint bg + colored text), driven by
+   docs/design-system.md Status labels table */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  padding: 3px var(--space-sm);
+  border-radius: var(--radius-pill);
+}
+
+.status-pending,
+.status-delivered {
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+}
+
+.status-ready,
+.status-active,
+.status-balance-ok {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.status-cancelled,
+.status-locked,
+.status-insufficient-balance {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.status-out-of-stock {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+/* .tag — small colored label chip (categories, "Popular", ratings) */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.tag.tag-primary { background: var(--color-primary-soft); color: var(--color-primary-dark); }
+.tag.tag-success { background: var(--color-success-soft); color: var(--color-success); }
+.tag.tag-warning { background: var(--color-warning-soft); color: var(--color-warning); }
+
+/* .empty-state */
+.empty-state {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-xl) var(--space-md);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.empty-state .empty-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+/* .tbd-placeholder — never a guessed value, always a labeled placeholder */
+.tbd-placeholder {
+  display: inline-block;
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-style: italic;
+}
+
+/* .alert-banner — Stock-Out Alert / Suspicious Usage Alert overlay partial */
+.alert-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  font-size: var(--text-body-size);
+}
+
+.alert-banner .dismiss {
+  color: var(--color-warning);
+  cursor: pointer;
+  font-size: var(--text-caption-size);
+}
+
+/* form fields */
+label {
+  display: block;
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+input, select {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: var(--text-body-size);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  background: var(--color-bg);
+}
+
+.field {
+  margin-bottom: var(--space-md);
+}
+
+/* persistent bottom-of-nav-bar app navigation (Home / My Orders / Balance, etc.) */
+.app-nav {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.app-nav a {
+  font-size: var(--text-caption-size);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.index-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ============================================================
+   Mock device/browser chrome — wraps every screen file so it
+   renders as an actual mockup frame, not a bare content div.
+   ============================================================ */
+
+.stage {
+  padding: var(--space-xl) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-page-bg);
+}
+
+/* .device-frame — mobile phone chrome, used by Student screens */
+.device-frame {
+  width: 375px;
+  border: 10px solid var(--color-text);
+  border-radius: 36px;
+  overflow: hidden;
+  background: var(--color-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.device-statusbar {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-caption-size);
+  color: var(--color-text);
+}
+
+.device-screen {
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+}
+
+.device-content {
+  flex: 1;
+  padding: var(--space-md);
+}
+
+/* .tab-bar — bottom mobile nav, replaces plain-text app-nav links */
+.tab-bar {
+  display: flex;
+  border-top: 1px solid var(--color-border);
+}
+
+.tab-bar a {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-sm) 0;
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.tab-bar a .tab-icon {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.tab-bar a.active {
+  color: var(--color-primary);
+}
+
+/* .browser-frame — desktop browser chrome, used by both apps */
+.browser-frame {
+  width: 900px;
+  max-width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+  background: var(--color-bg);
+}
+
+.browser-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.browser-dots span {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-border);
+  margin-right: 4px;
+}
+
+.browser-url {
+  flex: 1;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--space-md);
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+}
+
+/* .top-nav — desktop app header (logo + section nav), used inside .browser-frame */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.top-nav .app-title {
+  font-size: var(--text-heading-size);
+  font-weight: var(--text-heading-weight);
+}
+
+.top-nav nav a {
+  margin-left: var(--space-md);
+  font-size: var(--text-body-size);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding-bottom: 4px;
+}
+
+.top-nav nav a.active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  font-weight: 600;
+}
+
+.browser-content {
+  padding: var(--space-lg);
+  min-height: 420px;
+  background: var(--color-page-bg);
+}
+
+/* .dev-note — IA traceability annotation (use case, Reached from, Leads to),
+   kept visually separate from the mock UI above it, never mixed into the chrome. */
+.dev-note {
+  width: 375px;
+  max-width: 100%;
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+}
+
+.dev-note.wide {
+  width: 900px;
+}
+
+.dev-note strong {
+  color: var(--color-text);
+}
+
+.dev-note p {
+  margin: var(--space-xs) 0;
+}
+
+/* generic layout helpers reused across screen mockups */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cols {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.cols > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto var(--space-sm);
+  color: var(--color-on-primary);
+}
+
+.icon-circle.success {
+  background: var(--color-success);
+  box-shadow: 0 8px 20px rgba(21, 128, 61, 0.3);
+}
+
+.icon-circle.danger {
+  background: var(--color-danger);
+  box-shadow: 0 8px 20px rgba(185, 28, 28, 0.3);
+}
+
+.chevron {
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+.list-row {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================================
+   Flagship-screen polish — reserved for the handful of screens
+   picked for README screenshots. The rest of the set stays plain.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  color: var(--color-on-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.3);
+}
+
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero::before { width: 160px; height: 160px; top: -70px; right: -40px; }
+.hero::after { width: 90px; height: 90px; bottom: -40px; right: 60px; }
+
+.hero > * {
+  position: relative;
+}
+
+.card-elevated {
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+.icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--color-primary-soft);
+  flex-shrink: 0;
+}
+
+.icon-badge.muted {
+  background: var(--color-surface);
+}
+
+.stock-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-border);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.stock-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-success);
+}
+
+.stock-bar.low > span {
+  background: var(--color-warning);
+}
+
+.tab-bar a.active {
+  position: relative;
+}
+
+.tab-bar a.active::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  margin: 2px auto 0;
+}
+
+.qr-frame {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.qr-frame .corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--color-primary);
+}
+
+.qr-frame .corner.tl { top: -6px; left: -6px; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+.qr-frame .corner.tr { top: -6px; right: -6px; border-left: none; border-bottom: none; border-radius: 0 6px 0 0; }
+.qr-frame .corner.bl { bottom: -6px; left: -6px; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
+.qr-frame .corner.br { bottom: -6px; right: -6px; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kanban-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.status-accent {
+  border-left: 4px solid var(--color-border);
+}
+
+.status-accent.pending { border-left-color: var(--color-text-muted); }
+.status-accent.ready { border-left-color: var(--color-success); }
+
+/* ============================================================
+   Desktop-web layout helpers — used by both apps now that
+   Student screens also render inside .browser-frame (laptop
+   screenshot), not a phone .device-frame.
+   ============================================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-body-size);
+}
+
+.data-table th {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr.clickable {
+  cursor: pointer;
+}
+
+.data-table tr.clickable:hover {
+  background: var(--color-surface);
+}
+
+.panel-narrow {
+  width: 360px;
+  max-width: 100%;
+  margin: 0 auto;
+}
