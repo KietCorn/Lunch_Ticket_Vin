@@ -13,7 +13,7 @@ Digitize a manual, paper-based cafeteria process for a single canteen at a singl
 
 ## 2. Architecture Constraints
 
-- **Tech stack** (fixed, per `CLAUDE.md`): FastAPI + SQLite + Server-Sent Events + Vanilla JS. No framework substitutions expected.
+- **Tech stack** (fixed, per `CLAUDE.md`): ASP.NET Core Web API (C#) + Entity Framework Core + SQLite + Server-Sent Events + ReactJS/Ant Design. No framework substitutions expected.
 - **Project type**: short-term school project, not a production system — architecture and documentation depth are scoped accordingly (no HA/scaling/production-hardening concerns).
 - **Scope constraint**: single canteen, single school only (see §3) — a deliberate constraint to keep the 4 pain points solved thoroughly rather than spread thin.
 - **Actor set is fixed**: Student, Counter Staff, Kitchen, Admin — no new actors permitted without revisiting `problem-statement.md`'s explicit out-of-scope list.
@@ -39,25 +39,25 @@ Pulled from `docs/architecture/c4/context.md` (C4 Level 1).
 
 ## 4. Solution Strategy
 
-*Placeholder — not covered by this pass; candidate for a future update once technology-level decisions beyond what's already in `CLAUDE.md` (FastAPI + SQLite + SSE + Vanilla JS) need justifying.*
+*Placeholder — not covered by this pass; candidate for a future update once technology-level decisions beyond what's already in `CLAUDE.md` (ASP.NET Core Web API + EF Core + SQLite + SSE + ReactJS/Ant Design) need justifying.*
 
 ## 5. Building Block View
 
 Pulled from `docs/architecture/c4/container.md` (Level 2) and `docs/architecture/c4/component.md` (Level 3).
 
-**Level 2 — Containers**: Student Web App, Staff & Kitchen Web App, Admin Back-office Web App (not yet built), Backend API (FastAPI), Database (SQLite). Full diagram and rationale in `c4/container.md`.
+**Level 2 — Containers**: Student Web App, Staff & Kitchen Web App, Admin Back-office Web App (not yet built), Backend API (ASP.NET Core Web API), Database (SQLite). Full diagram and rationale in `c4/container.md`.
 
 **Level 3 — Components of the Backend API**: Order Service, Ledger Service, Card & Fraud Service, Menu Service, Notification Service. Grouping rationale and full use-case traceability in `c4/component.md`.
 
-**Data model**: no ERD document exists yet (`CLAUDE.md` references `docs/schema.dbml`, which isn't present in the repo). The live schema in `lunchcard.db` at the repo root (`students`, `accounts`, `cards`, `transactions`, `orders`, `daily_menu`, `timeslots`, `staff`, `menu_items`) is currently the closest thing to a data model reference — inspect it directly with `sqlite3 lunchcard.db ".schema"`. Generating a proper `docs/schema.dbml` from this is a recommended follow-up, out of scope for this pass.
+**Data model**: documented in `docs/architecture/erd.md` (ERD) and `docs/schema.dbml`, matching the live schema in `lunchcard.db` at the repo root.
 
 ## 6. Runtime View
 
-**Gap**: no sequence diagrams exist anywhere in this repo yet. This section is intentionally left without a runtime scenario rather than fabricating one that isn't backed by an actual diagram. Candidate scenarios worth diagramming next, based on the depth areas in `requirements.md`: Place Pre-Order → Deduct Balance → Append Transaction Record (happy path + insufficient-balance failure), Cancel Pre-Order with the refund-percentage branch, and Report Item Out of Stock → Refund Balance → Receive Stock-Out Notification.
+A sequence-diagram method + one worked example (UC1 Login) now exists in `docs/architecture/sequence-diagram-guide.md`, with a shortlist of remaining use cases worth diagramming next (Place Pre-Order, Cancel Pre-Order, Confirm Pre-Order, Create Walk-in Order, Mark Order as Ready) — no runtime scenario is duplicated here.
 
 ## 7. Deployment View
 
-*Placeholder — not covered by this pass. This is a school project without a defined hosting target yet (per `CLAUDE.md`, dev is local `uvicorn` + a directly-opened HTML file).*
+*Placeholder — not covered by this pass. This is a school project without a defined hosting target yet (per `CLAUDE.md`, backend dev is local `dotnet run`; frontend dev tooling for the React apps is not yet decided — flagged separately, not guessed here).*
 
 ## 8. Cross-cutting Concepts
 
