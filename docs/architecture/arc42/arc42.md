@@ -82,13 +82,13 @@ ADR-style entries for decisions already made, per `problem-statement.md`'s non-n
 - **Reason**: Pain Point 4 (kitchen operations) already justified one real-time channel; introducing a second (e.g. WebSockets for notifications, SSE for queue) adds operational complexity — two connections to manage, two failure modes — without a corresponding benefit for a single-canteen, short-term student project.
 - **Rejected alternative**: polling from the Student Web App for stock-out status — rejected because it delays notification (defeats the "near real time" requirement in `requirements.md`) and adds load without reusing infrastructure that already exists for exactly this kind of push.
 
-**Dependency note**: none of the three ADRs above resolve the open `[TBD]` business-rule values in `requirements.md` (cancellation cutoff hours/percentage, fraud-detection time window/attempt threshold, QR expiry rule) — those remain open and are not decided here.
+**Dependency note**: the three ADRs above are architectural, not business-rule decisions. The previously-open business-rule values in `requirements.md` (cancellation cutoff/percentage, fraud-detection threshold, QR expiry rule) are now resolved — see `requirements.md`'s "Resolved business rules."
 
 ## 10. Quality Requirements
 
 | Quality attribute | Requirement | Status |
 |---|---|---|
-| Performance / Concurrency | System must handle **[TBD: number]** concurrent students/orders without degradation during peak lunch hours — `problem-statement.md` flags this load as "non-trivial" but doesn't fix a number | Open — needs a concrete figure before it's testable |
+| Performance / Concurrency | System must handle **~200 concurrent students/orders** without degradation during peak lunch hours (target assumes the whole school could hit the system in the same lunch window; a conservative, safe figure for a single-canteen school deployment) | Defined |
 | Data integrity | Every balance mutation (Deduct/Refund) is atomic with its Append Transaction Record entry — no balance change without a matching audit entry, and vice versa | Defined (`requirements.md` Group 1) |
 | Fairness | Pre-order and walk-in queues are never merged, at data/API/UI layers | Defined (ADR-2) |
 | Financial safety | Balance can never go negative (`CHECK (balance >= 0)` at the DB layer, backed by Enforce Balance) | Defined |

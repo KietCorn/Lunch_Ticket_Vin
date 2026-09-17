@@ -21,8 +21,8 @@ Each row below is one atomic unit per the Business Rules in `CLAUDE.md`: all ste
 Steps 2–6 roll back together if any one fails; step 1 is a precondition check before the transaction begins.
 
 ### `POST /orders/{orderId}/cancel` — UC7 Cancel Pre-Order
-1. Check the cancellation cutoff — **[TBD]**: exact cutoff hours before timeslot start not finalized (`docs/investment/requirements.md`). Reject if past cutoff.
-2. Refund Balance — add back the refund amount. Refund percentage post-cutoff is also **[TBD]**; pre-cutoff assumed 100%.
+1. Check the cancellation cutoff — confirmed as **2 hours before timeslot start** (`docs/investment/requirements.md`). Determines which refund tier applies; cancellation itself is still allowed on either side, as long as the order isn't yet confirmed/picked up.
+2. Refund Balance — add back the refund amount: **100%** if cancelled ≥2 hours before timeslot start, **50%** if cancelled after that cutoff.
 3. Restore the menu slot's available quantity.
 4. Append Transaction Record — one new refund row.
 
@@ -36,7 +36,7 @@ Mirror of Place Pre-Order; steps 2–4 are atomic together.
 **Open question carried from `docs/api/openapi.yaml`**: the use-case diagram shows this step *possibly* including a second Deduct Balance call in addition to Place Pre-Order's own deduction (double-charge risk) — unresolved, not decided here. This endpoint's step list above assumes no second deduction.
 
 ### `POST /orders/walk-ins` — UC9 Create Walk-in Order
-1. Verify card (`POST /cards/{cardToken}/verify`) — may surface a suspicious-usage flag (UC22, thresholds **[TBD]**).
+1. Verify card (`POST /cards/{cardToken}/verify`) — may surface a suspicious-usage flag (UC22): card is locked after **3 consecutive failed scan attempts**; unlock is manual via staff (UC11).
 2. Check Available Quantity (UC28).
 3. Enforce Balance (UC26).
 4. Deduct Balance.
@@ -79,4 +79,4 @@ Step 2–3 repeat per affected order but each order's refund+transaction pair is
 
 1. Before implementing an endpoint listed above, this is the step order the transaction boundary must enforce — not a suggestion.
 2. If an endpoint's actual implementation needs a different order, update this file in the same change, not after.
-3. `[TBD]` values referenced above (cancellation cutoff/refund %, fraud thresholds, QR expiry offset) are not invented here — see `CLAUDE.md` Known Gaps.
+3. Business-rule values referenced above (2-hour cancellation cutoff / 100%-50% refund tiers, 3-failed-scan fraud lock threshold, one-time-use QR expiry) are confirmed — see `docs/investment/requirements.md`'s "Resolved business rules."

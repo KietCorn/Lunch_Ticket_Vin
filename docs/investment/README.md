@@ -22,4 +22,4 @@ See `usecase.md` for the mermaid source and the actor/use-case traceability tabl
 
 1. `problem-statement.md` — scope and pain points
 2. `Lunch_Ticket.png` / `usecase.md` — use case diagram and traceability
-3. `requirements.md` — user stories derived from the use cases, with open `[TBD]` business rules called out
+3. `requirements.md` — user stories derived from the use cases; business rules previously marked `[TBD]` are now resolved (see "Resolved business rules" at the bottom)

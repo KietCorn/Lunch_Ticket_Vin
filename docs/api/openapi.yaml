@@ -74,10 +74,9 @@ paths:
       description: >
         Implements UC7 Cancel Pre-Order. Includes Refund Balance and Append
         Transaction Record atomically. Refund percentage depends on the
-        cancellation-cutoff policy.
-        # TBD: refund percentage rule not finalized — docs/investment/requirements.md
-        # marks the cutoff hours (X) and post-cutoff refund percent (Y) as [TBD].
-        # CancelPreOrderResponse.refundPercent below is shaped but not yet computable.
+        cancellation-cutoff policy: 100% if cancelled 2+ hours before the
+        order's timeslot start, 50% if cancelled after that cutoff (per
+        docs/investment/requirements.md "Resolved business rules").
       parameters:
         - $ref: '#/components/parameters/OrderId'
       responses:
@@ -456,11 +455,10 @@ paths:
         Supports the "include: verify card" relationship from Order Service
         (docs/architecture/c4/component.md). Also carries the UC22 Detect
         Suspicious Card Usage `<<extend>>` — see `suspicious` field below.
-        # TBD: fraud thresholds not finalized — docs/investment/requirements.md
-        # marks (a) the time window for same-card-different-terminal detection
-        # and (b) the consecutive-failed-scan lock threshold as [TBD]. The
-        # `suspicious`/`reason` fields are shaped but not yet computable
-        # against a real rule.
+        A card is locked after 3 consecutive failed scan attempts (per
+        docs/investment/requirements.md "Resolved business rules"); unlock is
+        manual only, via the Lock/Issue Card flow (UC11). Duplicate-terminal
+        detection is descoped from MVP.
       parameters:
         - name: cardToken
           in: path

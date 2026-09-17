@@ -37,49 +37,12 @@ Derived from the Student's 8 use cases (UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC21)
 
 **Entry/exit notes**:
 
-- QR Display → Order Detail covers both exit paths: a successful staff scan (Confirm Pre-Order, Staff-side) and Expire QR firing without a scan. The exact expiry condition is `[TBD]` per `requirements.md`; regardless of which condition fires, the screen returns to Order Detail (showing either "picked up" or "QR expired, tap to regenerate").
+- QR Display → Order Detail covers the exit path: a successful staff scan (Confirm Pre-Order, Staff-side) immediately invalidates the QR (one-time-use, per `requirements.md`) and returns to Order Detail showing "picked up." There is no time-based expiry path to design for — a re-displayed QR after a failed/no scan remains valid until the order itself is confirmed or cancelled.
 - Cancellation Result always returns to My Orders (list), not back to Order Detail, since the order is no longer active.
 
 ### 3. Diagram
 
 ![Lunch Ticket System Order diagram](reference_order.png)
-
-```mermaid
-flowchart TD
-    Login["Login Screen"]
-    Home["Home / Daily Menu Screen"]
-    Review["Pre-Order Review Screen"]
-    Placed["Order Placed Confirmation Screen"]
-    MyOrders["My Orders Screen"]
-    Detail["Order Detail Screen"]
-    QR["QR Display Screen"]
-    CancelConfirm["Cancel Order Confirmation Screen"]
-    CancelResult["Cancellation Result Screen"]
-    Balance["Balance & Transaction Screen"]
-    StockAlert(["Stock-Out Alert<br/>(overlay, not a screen)"])
-
-    Login -- "login success" --> Home
-    Home -- "select item + slot" --> Review
-    Review -- "confirm & pay" --> Placed
-    Placed -- "view order" --> Detail
-    Home -- "nav: My Orders" --> MyOrders
-    MyOrders -- "tap order" --> Detail
-    Detail -- "tap Show QR" --> QR
-    QR -- "staff scans (Confirm Pre-Order)" --> Detail
-    QR -- "Expire QR fires [TBD condition]" --> Detail
-    Detail -- "tap Cancel" --> CancelConfirm
-    CancelConfirm -- "confirm cancellation" --> CancelResult
-    CancelResult --> MyOrders
-    Home -- "nav: Account" --> Balance
-    StockAlert -. "tap alert (from any screen)" .-> Detail
-
-    classDef entry fill:#dbeafe,stroke:#1d4ed8,stroke-width:1px,color:#1e3a8a;
-    classDef screen fill:#dcfce7,stroke:#15803d,stroke-width:1px,color:#14532d;
-    classDef overlay fill:#fee2e2,stroke:#b91c1c,stroke-width:1px,color:#7f1d1d;
-    class Login entry;
-    class Home,Review,Placed,MyOrders,Detail,QR,CancelConfirm,CancelResult,Balance screen;
-    class StockAlert overlay;
-```
 
 **Screen list (reference order):**
 

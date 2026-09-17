@@ -26,5 +26,5 @@ architecture/
 - ERD is now documented (`docs/api/erd.md` + `docs/api/schema.dbml`) — Arc42 §5's "no ERD" note is stale until that section is updated to point at it.
 - A sequence-diagram method + one worked example now exists (`docs/architecture/sequence-diagram-guide.md`) — Arc42 §6 still describes this as an open gap and hasn't been updated to reference it.
 - The Admin Back-office frontend isn't built yet (wireframes deferred per `CLAUDE.md`), though its use cases and container are modeled here.
-- Three `[TBD]` business-rule values from `docs/investment/requirements.md` (cancellation refund cutoff/%, fraud-detection window/threshold, QR expiry rule) and one peak-concurrency number (Arc42 §10) remain unresolved — none are invented here.
+- All three business-rule values from `docs/investment/requirements.md` (cancellation refund cutoff/%, fraud-detection threshold, QR expiry rule) and the peak-concurrency number (Arc42 §10) are now resolved — see "Resolved business rules" in `requirements.md` and Arc42 §10.
 - Two possible use-case-diagram inconsistencies flagged in `requirements.md` (Enforce Balance / Available Quantity not wired into Place Pre-Order; Confirm Pre-Order possibly double-charging via Deduct Balance) are still open.

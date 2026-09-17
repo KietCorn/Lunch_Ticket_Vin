@@ -36,5 +36,5 @@ Use the `/design-screen` slash command (`.claude/commands/design-screen.md`) —
 ## Known simplifications
 
 - Overlays (Stock-Out Alert, Suspicious Usage Alert) render as a shared `.alert-banner` partial on the pages that can show them — they are not separate screen files, per `ia-screens.md`'s own flags.
-- `[TBD]` business-rule values (QR expiry offset, cancellation refund cutoff/%) render as a `.tbd-placeholder` box, never a guessed number.
+- Business-rule values (QR one-time-use expiry, 2-hour cancellation refund cutoff / 100%-50% tiers) are now confirmed per `docs/investment/requirements.md` and reflected directly on the QR Display, Order Detail, and Cancel Confirmation screens — no more `.tbd-placeholder` boxes for these values.
 - Sample data (student names, order IDs, amounts) is illustrative only, not tied to `lunchcard.db`.

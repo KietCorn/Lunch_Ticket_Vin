@@ -75,5 +75,5 @@ Root namespace is `LunchTicket.Api`, with one sub-namespace per folder (`LunchTi
 ## Notes / gaps carried forward
 
 - This is a structural target — no backend code exists yet on this branch (see `CLAUDE.md` Current State). An earlier, unrelated prototype on the `main` branch used a flat Python/FastAPI structure with business logic inside routers; that code was not reused (see `CLAUDE.md` Business Rules section for what was carried forward from it in words only). This .NET layout starts with the 3-tier separation from day one rather than migrating from a flat state.
-- The `[TBD]` business rules from `docs/investment/requirements.md` (cancellation refund cutoff/%, fraud-detection thresholds, QR expiry rule) live inside `LedgerService` / `CardFraudService` / `NotificationService` respectively once decided — no placeholder logic is implied by this structure.
+- The business rules from `docs/investment/requirements.md` (2-hour cancellation cutoff with 100%/50% refund tiers, 3-failed-scan fraud lock with manual unlock, one-time-use QR expiry) are now confirmed and live inside `LedgerService` / `CardFraudService` / `NotificationService` respectively.
 - The ERD gap this doc originally flagged is now filled — see `docs/api/erd.md` and `docs/api/schema.dbml`. `Models/` above should mirror that schema via EF Core Code-First entities and migrations.

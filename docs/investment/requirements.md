@@ -1,8 +1,8 @@
 # User Stories — Lunch Ticket System
 
-Source of truth: `docs/usecase.md` (28 use cases across 4 actors). One story per use case, grouped by depth of treatment. `[TBD: ...]` marks business-rule numbers not yet decided elsewhere in the project — do not treat these as final until confirmed.
+Source of truth: `docs/usecase.md` (28 use cases across 4 actors). One story per use case, grouped by depth of treatment.
 
-Resolved during this pass: stock-out resolution path is **auto-refund** (confirmed by product owner) — see Report Item Out of Stock.
+Resolved during this pass: stock-out resolution path is **auto-refund** (confirmed by product owner) — see Report Item Out of Stock. All previously-open `[TBD]` business rules (cancellation refund cutoff/%, fraud-detection thresholds, QR expiry rule) are now resolved — see "Resolved business rules" at the bottom.
 
 ---
 
@@ -63,12 +63,12 @@ These four use cases are system-level, reachable only via `<<include>>` from oth
 
 **Acceptance Criteria**:
 - Cancellation is only allowed while the order is in a cancellable state (not yet confirmed/picked up).
-- Refund percentage depends on how far before the scheduled meal the cancellation occurs: full refund if cancelled more than **[TBD: X hours]** before the meal; **[TBD: Y%]** refund if cancelled after that cutoff.
+- Refund percentage depends on how far before the scheduled timeslot the cancellation occurs: **100% refund** if cancelled **2 or more hours** before the timeslot start; **50% refund** if cancelled after that cutoff (but still before pickup/confirmation).
 - The computed refund amount is passed to Refund Balance, which credits the balance and creates a matching Append Transaction Record entry atomically.
 - Order status updates to "cancelled" and disappears from Kitchen's View Order Queue.
 - Student sees a confirmation showing the refund amount and percentage applied.
 
-**INVEST check**: Not yet Estimable — blocked on the **[TBD: X, Y]** cutoff and percentage. Cannot be considered ready for implementation until those are confirmed.
+**INVEST check**: Estimable and ready for implementation — cutoff (2 hours before timeslot start) and post-cutoff refund percentage (50%) are confirmed.
 
 ### Report Item Out of Stock
 **Story**: As Kitchen staff, I want to mark a menu item as out of stock mid-service, so that no further orders are accepted for it and students who already pre-ordered it are handled fairly.
@@ -95,12 +95,13 @@ These four use cases are system-level, reachable only via `<<include>>` from oth
 **Story**: As a Counter Staff member, I want to be alerted when a student's card is used in a way that looks fraudulent, so that I can stop the transaction before money moves incorrectly.
 
 **Acceptance Criteria**:
-- Flag as suspicious when the same card is used in two payment attempts within **[TBD: time window]** at different terminals/counters.
-- After **[TBD: N]** consecutive failed card-scan attempts on the same card, temporarily lock that card from further scan attempts.
-- When flagged, the in-progress Deduct Balance call is blocked — payment does not complete while the flag is active.
-- Counter Staff sees a clear on-screen alert distinguishing "suspicious usage" from an ordinary declined/insufficient-balance transaction.
+- After **3 consecutive failed card-scan attempts** on the same card, lock that card from further scan attempts.
+- Duplicate-terminal (same card, two terminals) detection is **descoped from MVP** — per `CLAUDE.md`'s settled assumption that card-lending/fraud risk during idle periods is accepted as minor, only the failed-scan-count check is implemented.
+- When locked, the in-progress Deduct Balance call is blocked — payment does not complete while the card is locked.
+- Unlocking is **manual only**: Counter Staff unlocks the card via the existing Lock/Issue Card flow (UC11) after verifying the student's identity in person — no auto-unlock timer.
+- Counter Staff sees a clear on-screen alert distinguishing "card locked (suspicious usage)" from an ordinary declined/insufficient-balance transaction.
 
-**INVEST check**: Not yet Estimable — blocked on both **[TBD]** thresholds. Also flagging that the "temporary lock" duration and unlock process aren't defined yet either — worth deciding alongside the thresholds.
+**INVEST check**: Estimable — failed-scan threshold (3) and unlock process (manual, via UC11) are confirmed. Duplicate-terminal detection is explicitly out of scope, not blocked.
 
 ### Available Quantity
 **Story**: As Counter Staff or Kitchen staff, when an order is being created or an item is reported out of stock, I want the system to check and update a menu item's remaining quantity, so that the kitchen never oversells an item beyond what's actually available.
@@ -121,20 +122,20 @@ These four use cases are system-level, reachable only via `<<include>>` from oth
 
 **Acceptance Criteria**:
 - QR encodes enough information to uniquely identify the order and student for the pickup-confirmation flow.
-- QR becomes invalid once Expire QR's conditions are met — the student cannot reuse an expired QR.
-- If an expired QR is scanned, Staff sees a clear "expired, please regenerate" message rather than a silent confirm.
+- QR becomes invalid immediately once Expire QR's one-time-use condition is met (a successful scan) — the student cannot reuse it.
+- If an already-used QR is scanned again, Staff sees a clear "already used, please regenerate" message rather than a silent confirm.
 
-**INVEST check**: Small and testable, but depends entirely on Expire QR's rules being defined — currently blocked on Expire QR's `[TBD]`.
+**INVEST check**: Small and testable — Expire QR's rule (one-time-use) is confirmed.
 
 ### Expire QR
 **Story**: As a Student, I want my order's QR code to stop being valid once it's no longer needed, so that it can't be reused or scanned by someone else after pickup.
 
 **Acceptance Criteria**:
-- QR expires under: **[TBD: time-based expiry duration from generation, and/or one-time-use — invalidated immediately after first successful scan]**.
-- An expired QR cannot be used to confirm pickup even if presented again.
-- Student can regenerate/re-display a fresh QR after expiry, provided the underlying order is still valid.
+- QR expires **one-time-use only**: invalidated immediately after its first successful scan. No time-based expiry duration is used.
+- An already-scanned QR cannot be used to confirm pickup again even if presented.
+- Student can regenerate/re-display a fresh QR at any time before pickup, provided the underlying order is still valid (not yet confirmed/cancelled).
 
-**INVEST check**: Not yet Estimable — need to confirm whether expiry is time-based, one-time-use, or both, before this can be implemented or tested.
+**INVEST check**: Estimable — expiry rule confirmed as one-time-use, no time component needed.
 
 ---
 
@@ -299,11 +300,11 @@ These four use cases are system-level, reachable only via `<<include>>` from oth
 
 ---
 
-## Open TBDs to confirm
+## Resolved business rules
 
-- Cancel Pre-Order refund cutoff hours and post-cutoff refund percentage.
-- Detect Suspicious Card Usage: time window for duplicate-terminal detection; consecutive failed-scan threshold before lock; lock duration/unlock process.
-- Expire QR: exact expiry rule (time-based duration, one-time-use after scan, or both).
+- **Cancel Pre-Order**: 100% refund if cancelled ≥2 hours before timeslot start; 50% refund if cancelled after that cutoff (still before pickup/confirmation).
+- **Detect Suspicious Card Usage**: lock after 3 consecutive failed scan attempts; duplicate-terminal time-window detection descoped from MVP; unlock is manual, via the existing Lock/Issue Card flow (UC11) — no auto-unlock timer.
+- **Expire QR**: one-time-use only — invalidated immediately after first successful scan, no time-based duration.
 
 ## Open diagram questions to confirm
 

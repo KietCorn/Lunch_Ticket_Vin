@@ -138,11 +138,11 @@ Hint: this one must show UC26 (balance check) and UC28 (quantity decrement) as r
 
 ### UC7 — Cancel Pre-Order
 Participants: `Student, App, API, DB`
-Hint: mirror of UC6 but refund direction — reuse the same shape, flip the sign. The cancellation cutoff itself is still `[TBD]` (`docs/investment/requirements.md`) — don't hardcode a specific cutoff time in the diagram, note it as a placeholder.
+Hint: mirror of UC6 but refund direction — reuse the same shape, flip the sign. Cancellation cutoff is confirmed (`docs/investment/requirements.md`): 100% refund if ≥2 hours before timeslot start, 50% after — show both branches in the `alt`.
 
 ### UC8 — Confirm Pre-Order (QR Scan)
 Participants: `Staff, POS App, API, DB`
-Hint: the alt flow branches on **token state**, not balance — expired token, not-found token, already-delivered order are three distinct outcomes. QR expiry rule is also still `[TBD]`.
+Hint: the alt flow branches on **token state**, not balance — already-used token (one-time-use, confirmed rule), not-found token, already-delivered order are three distinct outcomes.
 
 ### UC9 — Create Walk-in Order
 Participants: `Staff, POS App, API, DB, SSE Stream`
@@ -160,4 +160,4 @@ Hint: this is where you show the SSE broadcast — one action from Kitchen fans 
 - [ ] Did every arrow that expects a response get a return arrow (`-->>`)?
 - [ ] Did you turn every **Alt Flow** row from the use case table into an `alt`/`opt` block — not just describe it in a note?
 - [ ] Did you show `<<include>>` system use cases (balance check, transaction append, quantity decrement) as actual messages, not skip them because they're "internal"?
-- [ ] Did you avoid hardcoding a `[TBD]` business rule value (cutoff times, thresholds) as if it were decided?
+- [ ] Did you use the confirmed business-rule values (2-hour cutoff / 50% late refund, one-time-use QR, 3-failed-scan lock) rather than inventing your own?

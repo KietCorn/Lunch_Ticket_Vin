@@ -48,7 +48,7 @@ Wireframes (HTML, click-through): [`docs/wireframes/`](docs/wireframes/README.md
 </tr>
 </table>
 
-Full click-through set (all 18 screens): [`docs/wireframes/README.md`](docs/wireframes/README.md)
+Full click-through set (all 18 wireframes): [`docs/wireframes/README.md`](docs/wireframes/README.md)
 
 > **Status:** IA/Screens Hierarchy done. Wireframes (HTML) — Student + Staff & Kitchen done, Admin not started. Hi-fi visual design — not started yet.
 
@@ -66,7 +66,8 @@ Full click-through set (all 18 screens): [`docs/wireframes/README.md`](docs/wire
 
 ![Lunch Ticket System Order diagram](docs/architecture/c4/c4-container.png)
 
-Component diagram (Level 3) not embedded here for length — see [`c4/component.md`](docs/architecture/c4/component.md).
+**Component (Level 3):**
+![Lunch Ticket System use case diagram](docs/architecture/c4/c4components.png)
 
 Full detail / rationale: [`c4/context.md`](docs/architecture/c4/context.md), [`c4/container.md`](docs/architecture/c4/container.md)
 
