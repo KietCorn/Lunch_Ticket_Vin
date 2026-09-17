@@ -26,7 +26,31 @@ Student flow (the other 3 actors — Counter Staff, Kitchen, Admin — have thei
 
 Full detail / rationale: [`ia-screens.md`](docs/screens_hierarchy/ia-screens.md)
 
-> **Status:** UI/UX (wireframes / visual design) not started yet.
+Wireframes (HTML, click-through): [`docs/wireframes/`](docs/wireframes/README.md) — 18 screens across Student (10) and Staff & Kitchen (8), built with a shared token set ([`docs/design-system.md`](docs/design-system.md)) and a repeatable `/design-screen` command so future screens stay consistent.
+
+**Screenshots — Student app:**
+
+<table>
+<tr>
+<td width="33%"><img src="docs/wireframes/screenshots/student_menu.png" alt="Student — Home / Daily Menu"><br><sub>Home / Daily Menu</sub></td>
+<td width="33%"><img src="docs/wireframes/screenshots/student_orders.png" alt="Student — My Orders"><br><sub>My Orders</sub></td>
+<td width="33%"><img src="docs/wireframes/screenshots/student_account.png" alt="Student — Balance & Transaction"><br><sub>Balance & Transaction</sub></td>
+</tr>
+</table>
+
+**Screenshots — Staff & Kitchen app:**
+
+<table>
+<tr>
+<td width="33%"><img src="docs/wireframes/screenshots/staff_home.png" alt="Staff — POS Home"><br><sub>POS Home</sub></td>
+<td width="33%"><img src="docs/wireframes/screenshots/staff_walk-in.png" alt="Staff — Create Walk-in Order"><br><sub>Create Walk-in Order</sub></td>
+<td width="33%"><img src="docs/wireframes/screenshots/staff_students.png" alt="Staff — Student Accounts"><br><sub>Student Accounts</sub></td>
+</tr>
+</table>
+
+Full click-through set (all 18 screens): [`docs/wireframes/README.md`](docs/wireframes/README.md)
+
+> **Status:** IA/Screens Hierarchy done. Wireframes (HTML) — Student + Staff & Kitchen done, Admin not started. Hi-fi visual design — not started yet.
 
 ### 3. C4 model (Context, Container, Components)
 
