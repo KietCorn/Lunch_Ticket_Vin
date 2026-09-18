@@ -100,13 +100,16 @@ Full detail / rationale: [`sequence-diagram-guide.md`](docs/architecture/sequenc
 
 ### 7. API code + unit tests
 
-> **Status:** Not started yet.
+- [`LunchTicket.Api/`](LunchTicket.Api/) — ASP.NET Core Web API (.NET 8), 3-tier (Controllers → Services → Repositories → Models/DTOs), EF Core Code-First on SQLite, per `docs/structure/backend.md`. Business-rule services (Ledger, Menu, Card/Fraud, Order orchestration), JWT Bearer auth with role-based authorization, and SSE notifications are implemented and smoke-tested. Full breakdown of what's in each folder: [`LunchTicket.Api/README.md`](LunchTicket.Api/README.md).
+
+> **Status:** Backend scaffold + core flows (order placement/cancel/confirm, walk-ins, ledger, JWT auth) working and smoke-tested. Not yet done: unit/integration tests, input validation beyond record required-ness, seed data beyond one bootstrap admin. Frontend not started.
 
 ### Known gaps (tracked, not hidden)
 
-- Admin frontend not designed yet (deferred).
-- Open `[TBD]` business rules: pre-order cancellation refund cutoff/%, fraud-detection thresholds, QR expiry rule.
+- Admin frontend not designed or implemented yet (deferred).
 - Two flagged use-case-diagram inconsistencies (see `docs/investment/requirements.md`): Enforce Balance/Available Quantity not wired into Place Pre-Order; Confirm Pre-Order possibly double-charging via Deduct Balance.
-- "One active card per student" and "one non-cancelled order per student per slot" still need a deliberate data-layer uniqueness guard once the .NET data-access layer is chosen (race-condition risk under concurrent requests).
-- QR expiry has no auto-cancel mechanism planned yet (checked inline at confirm-time only, no scheduled sweep).
-- Student authentication is not designed yet — no login flow exists for students distinct from staff/admin login.
+- "One active card per student" and "one non-cancelled order per student per slot" are enforced at the application level only (checked before insert) — no DB-level uniqueness guard yet, so still race-condition-prone under concurrent requests.
+- QR expiry has no auto-cancel mechanism — an expired, unconfirmed order doesn't transition state on its own; a scheduled sweep would be needed for that.
+- No unit/integration tests for the backend yet.
+
+Previously-open `[TBD]` business rules (refund cutoff/%, fraud threshold, QR expiry rule) and student authentication are now resolved/implemented — see `CLAUDE.md` and [`LunchTicket.Api/README.md`](LunchTicket.Api/README.md#auth) for details.
