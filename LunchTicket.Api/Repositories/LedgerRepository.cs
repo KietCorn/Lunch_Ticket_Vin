@@ -29,4 +29,6 @@ public class LedgerRepository : ILedgerRepository
             .ToListAsync();
 
     public async Task AddTransactionAsync(Transaction transaction) => await _db.Transactions.AddAsync(transaction);
+
+    public async Task AddAccountAsync(Account account) => await _db.Accounts.AddAsync(account);
 }

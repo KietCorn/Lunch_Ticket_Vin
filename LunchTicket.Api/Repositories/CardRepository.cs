@@ -29,4 +29,11 @@ public class CardRepository : ICardRepository
 
     public Task<Student?> GetStudentByIdAsync(int studentId) =>
         _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+
+    public Task<Student?> GetStudentByCodeAsync(string studentCode) =>
+        _db.Students.FirstOrDefaultAsync(s => s.StudentCode == studentCode);
+
+    public async Task AddStudentAsync(Student student) => await _db.Students.AddAsync(student);
+
+    public async Task AddStaffAsync(Staff staff) => await _db.Staff.AddAsync(staff);
 }

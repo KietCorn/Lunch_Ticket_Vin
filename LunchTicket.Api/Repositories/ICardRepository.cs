@@ -10,4 +10,7 @@ public interface ICardRepository
     Task<Staff?> GetStaffByUsernameAsync(string username);
     Task AddCardAsync(Card card);
     Task<Student?> GetStudentByIdAsync(int studentId);
+    Task<Student?> GetStudentByCodeAsync(string studentCode);
+    Task AddStudentAsync(Student student);
+    Task AddStaffAsync(Staff staff);
 }

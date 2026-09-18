@@ -8,4 +8,5 @@ public interface ILedgerRepository
     Task<List<Transaction>> GetTransactionsByStudentIdAsync(int studentId);
     Task<List<Transaction>> GetAllTransactionsAsync(DateTime? from, DateTime? to);
     Task AddTransactionAsync(Transaction transaction);
+    Task AddAccountAsync(Account account);
 }
