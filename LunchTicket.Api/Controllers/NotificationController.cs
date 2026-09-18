@@ -1,11 +1,13 @@
 using System.Text.Json;
 using LunchTicket.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunchTicket.Api.Controllers;
 
 [ApiController]
 [Route("api/kitchen")]
+[Authorize(Roles = "staff,admin")]
 public class NotificationController : ControllerBase
 {
     private readonly INotificationService _notificationService;

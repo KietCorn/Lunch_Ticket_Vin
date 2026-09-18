@@ -1,11 +1,13 @@
 using LunchTicket.Api.DTOs;
 using LunchTicket.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunchTicket.Api.Controllers;
 
 [ApiController]
 [Route("api/students/{studentId:int}")]
+[Authorize(Roles = "student,staff,admin")]
 public class LedgerController : ControllerBase
 {
     private readonly ILedgerService _ledgerService;
@@ -18,24 +20,32 @@ public class LedgerController : ControllerBase
     [HttpGet("balance")]
     public async Task<ActionResult<AccountDto>> GetBalance(int studentId)
     {
+        if (User.IsInRole("student") && studentId != User.GetUserId())
+            return Forbid();
+
         return Ok(await _ledgerService.GetBalanceAsync(studentId));
     }
 
     [HttpGet("transactions")]
     public async Task<ActionResult<List<TransactionDto>>> GetTransactions(int studentId)
     {
+        if (User.IsInRole("student") && studentId != User.GetUserId())
+            return Forbid();
+
         return Ok(await _ledgerService.GetTransactionsAsync(studentId));
     }
 
     [HttpPost("topup")]
-    public async Task<ActionResult<AccountDto>> TopUp(int studentId, [FromQuery] int actorStaffId, [FromBody] TopUpRequest request)
+    [Authorize(Roles = "staff,admin")]
+    public async Task<ActionResult<AccountDto>> TopUp(int studentId, [FromBody] TopUpRequest request)
     {
-        return Ok(await _ledgerService.TopUpAsync(studentId, request.Amount, actorStaffId));
+        return Ok(await _ledgerService.TopUpAsync(studentId, request.Amount, User.GetUserId()));
     }
 }
 
 [ApiController]
 [Route("api/reports")]
+[Authorize(Roles = "staff,admin")]
 public class ReportsController : ControllerBase
 {
     private readonly ILedgerService _ledgerService;

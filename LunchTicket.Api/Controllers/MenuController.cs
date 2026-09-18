@@ -1,11 +1,13 @@
 using LunchTicket.Api.DTOs;
 using LunchTicket.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunchTicket.Api.Controllers;
 
 [ApiController]
 [Route("api/menu")]
+[Authorize]
 public class MenuController : ControllerBase
 {
     private readonly IMenuService _menuService;
@@ -22,6 +24,7 @@ public class MenuController : ControllerBase
     }
 
     [HttpPost("items")]
+    [Authorize(Roles = "staff,admin")]
     public async Task<ActionResult<MenuItemDto>> CreateMenuItem([FromQuery] string name, [FromQuery] string? description, [FromQuery] decimal price)
     {
         return Ok(await _menuService.CreateMenuItemAsync(name, description, price));
@@ -40,6 +43,7 @@ public class MenuController : ControllerBase
     }
 
     [HttpPost("daily/{dailyMenuId:int}/report-out-of-stock")]
+    [Authorize(Roles = "staff,admin")]
     public async Task<ActionResult<ReportOutOfStockResult>> ReportOutOfStock(int dailyMenuId)
     {
         return Ok(await _menuService.ReportOutOfStockAsync(dailyMenuId));

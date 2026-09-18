@@ -1,11 +1,13 @@
 using LunchTicket.Api.DTOs;
 using LunchTicket.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunchTicket.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -15,50 +17,68 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    // studentId/staffId are accepted as query params until student/staff auth (JWT claims) is designed — see CLAUDE.md "Known Gaps".
-
     [HttpPost("pre-orders")]
-    public async Task<ActionResult<OrderDto>> PlacePreOrder([FromQuery] int studentId, [FromBody] PlacePreOrderRequest request)
+    [Authorize(Roles = "student")]
+    public async Task<ActionResult<OrderDto>> PlacePreOrder([FromBody] PlacePreOrderRequest request)
     {
-        var order = await _orderService.PlacePreOrderAsync(studentId, request.DailyMenuId, request.TimeslotId);
+        var order = await _orderService.PlacePreOrderAsync(User.GetUserId(), request.DailyMenuId, request.TimeslotId);
         return CreatedAtAction(nameof(GetOrder), new { orderId = order.Id }, order);
     }
 
     [HttpPost("{orderId:int}/cancel")]
+    [Authorize(Roles = "student,staff,admin")]
     public async Task<ActionResult<CancelPreOrderResponse>> CancelPreOrder(int orderId)
     {
+        if (User.IsInRole("student"))
+        {
+            var existing = await _orderService.GetOrderAsync(orderId);
+            if (existing is null)
+                return NotFound();
+            if (existing.StudentId != User.GetUserId())
+                return Forbid();
+        }
+
         var result = await _orderService.CancelPreOrderAsync(orderId);
         return Ok(result);
     }
 
     [HttpPost("{orderId:int}/confirm")]
-    public async Task<ActionResult<OrderDto>> ConfirmPreOrder(int orderId, [FromQuery] int staffId, [FromBody] ConfirmPreOrderRequest request)
+    [Authorize(Roles = "staff,admin")]
+    public async Task<ActionResult<OrderDto>> ConfirmPreOrder(int orderId, [FromBody] ConfirmPreOrderRequest request)
     {
-        var order = await _orderService.ConfirmPreOrderAsync(request.QrToken, staffId);
+        var order = await _orderService.ConfirmPreOrderAsync(request.QrToken, User.GetUserId());
         return Ok(order);
     }
 
     [HttpPost("walk-ins")]
-    public async Task<ActionResult<OrderDto>> CreateWalkInOrder([FromQuery] int staffId, [FromBody] CreateWalkinOrderRequest request)
+    [Authorize(Roles = "staff,admin")]
+    public async Task<ActionResult<OrderDto>> CreateWalkInOrder([FromBody] CreateWalkinOrderRequest request)
     {
-        var order = await _orderService.CreateWalkInOrderAsync(request.CardToken, request.DailyMenuId, request.TimeslotId, staffId);
+        var order = await _orderService.CreateWalkInOrderAsync(request.CardToken, request.DailyMenuId, request.TimeslotId, User.GetUserId());
         return CreatedAtAction(nameof(GetOrder), new { orderId = order.Id }, order);
     }
 
     [HttpGet("{orderId:int}")]
+    [Authorize(Roles = "student,staff,admin")]
     public async Task<ActionResult<OrderDto>> GetOrder(int orderId)
     {
         var order = await _orderService.GetOrderAsync(orderId);
-        return order is null ? NotFound() : Ok(order);
+        if (order is null)
+            return NotFound();
+        if (User.IsInRole("student") && order.StudentId != User.GetUserId())
+            return Forbid();
+        return Ok(order);
     }
 
     [HttpGet("queue")]
+    [Authorize(Roles = "staff,admin")]
     public async Task<ActionResult<QueueDto>> GetQueue()
     {
         return Ok(await _orderService.GetQueueAsync());
     }
 
     [HttpPost("{orderId:int}/ready")]
+    [Authorize(Roles = "staff,admin")]
     public async Task<ActionResult<OrderDto>> MarkReady(int orderId)
     {
         return Ok(await _orderService.MarkReadyAsync(orderId));
@@ -67,6 +87,7 @@ public class OrdersController : ControllerBase
 
 [ApiController]
 [Route("api/students/{studentId:int}/orders")]
+[Authorize(Roles = "student,staff,admin")]
 public class StudentOrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -79,6 +100,9 @@ public class StudentOrdersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<OrderDto>>> GetOrdersByStudent(int studentId)
     {
+        if (User.IsInRole("student") && studentId != User.GetUserId())
+            return Forbid();
+
         return Ok(await _orderService.GetOrdersByStudentAsync(studentId));
     }
 }

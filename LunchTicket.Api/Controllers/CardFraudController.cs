@@ -1,11 +1,13 @@
 using LunchTicket.Api.DTOs;
 using LunchTicket.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunchTicket.Api.Controllers;
 
 [ApiController]
 [Route("api")]
+[Authorize(Roles = "staff,admin")]
 public class CardFraudController : ControllerBase
 {
     private readonly ICardFraudService _cardFraudService;
@@ -16,6 +18,7 @@ public class CardFraudController : ControllerBase
     }
 
     [HttpPost("auth/login")]
+    [AllowAnonymous]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
         try
