@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using LunchTicket.Api.Data;
 using LunchTicket.Api.DTOs;
 using LunchTicket.Api.Models;
 using LunchTicket.Api.Repositories;
@@ -10,24 +11,80 @@ public class CardFraudService : ICardFraudService
 {
     private const int FailedScanLockThreshold = 3;
 
+    private readonly AppDbContext _db;
     private readonly ICardRepository _cardRepository;
+    private readonly ILedgerRepository _ledgerRepository;
+    private readonly IJwtTokenService _jwtTokenService;
 
-    public CardFraudService(ICardRepository cardRepository)
+    public CardFraudService(AppDbContext db, ICardRepository cardRepository, ILedgerRepository ledgerRepository, IJwtTokenService jwtTokenService)
     {
+        _db = db;
         _cardRepository = cardRepository;
+        _ledgerRepository = ledgerRepository;
+        _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<LoginResponse> LoginAsync(string username, string password)
+    public async Task<LoginResponse> LoginAsync(string identifier, string password)
     {
-        var staff = await _cardRepository.GetStaffByUsernameAsync(username)
+        var staff = await _cardRepository.GetStaffByUsernameAsync(identifier);
+        if (staff is not null)
+        {
+            if (!staff.IsActive || staff.PasswordHash != Hash(password))
+                throw new UnauthorizedAccessException("Invalid credentials.");
+
+            var role = staff.IsAdmin ? "admin" : "staff";
+            var token = _jwtTokenService.GenerateToken(staff.Id, role, staff.FullName);
+            return new LoginResponse(token, role, staff.Id, staff.FullName);
+        }
+
+        var student = await _cardRepository.GetStudentByCodeAsync(identifier)
             ?? throw new UnauthorizedAccessException("Invalid credentials.");
 
-        if (!staff.IsActive || staff.PasswordHash != Hash(password))
+        if (student.PasswordHash != Hash(password))
             throw new UnauthorizedAccessException("Invalid credentials.");
 
-        var role = staff.IsAdmin ? "admin" : "staff";
-        var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-        return new LoginResponse(token, role);
+        var studentToken = _jwtTokenService.GenerateToken(student.Id, "student", student.FullName);
+        return new LoginResponse(studentToken, "student", student.Id, student.FullName);
+    }
+
+    public async Task<StudentDto> CreateStudentAsync(string studentCode, string fullName, string? email, string password)
+    {
+        var student = new Student
+        {
+            StudentCode = studentCode,
+            FullName = fullName,
+            Email = email,
+            PasswordHash = Hash(password),
+            CreatedAt = DateTime.UtcNow
+        };
+        await _cardRepository.AddStudentAsync(student);
+
+        await _ledgerRepository.AddAccountAsync(new Account
+        {
+            Student = student,
+            Balance = 0
+        });
+
+        await _db.SaveChangesAsync();
+
+        return new StudentDto(student.Id, student.StudentCode, student.FullName, student.Email, student.CreatedAt, student.UpdatedAt);
+    }
+
+    public async Task<StaffDto> CreateStaffAsync(string username, string fullName, string password, bool isAdmin)
+    {
+        var staff = new Staff
+        {
+            Username = username,
+            FullName = fullName,
+            PasswordHash = Hash(password),
+            IsAdmin = isAdmin,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _cardRepository.AddStaffAsync(staff);
+        await _db.SaveChangesAsync();
+
+        return new StaffDto(staff.Id, staff.Username, staff.FullName, staff.IsAdmin, staff.IsActive, staff.CreatedAt);
     }
 
     public async Task<CardDto> IssueCardAsync(int studentId, string cardToken)
@@ -51,6 +108,7 @@ public class CardFraudService : ICardFraudService
             IssuedAt = DateTime.UtcNow
         };
         await _cardRepository.AddCardAsync(card);
+        await _db.SaveChangesAsync();
 
         return ToDto(card);
     }
@@ -60,6 +118,7 @@ public class CardFraudService : ICardFraudService
         var card = await GetCardOrThrow(cardId);
         card.Status = CardStatus.Locked;
         card.LockedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
         return ToDto(card);
     }
 
@@ -69,6 +128,7 @@ public class CardFraudService : ICardFraudService
         card.Status = CardStatus.Active;
         card.LockedAt = null;
         card.FailedScanCount = 0;
+        await _db.SaveChangesAsync();
         return ToDto(card);
     }
 
@@ -97,6 +157,8 @@ public class CardFraudService : ICardFraudService
             card.Status = CardStatus.Locked;
             card.LockedAt = DateTime.UtcNow;
         }
+
+        await _db.SaveChangesAsync();
 
         return new CardVerifyResult(ToDto(card), false, suspicious, suspicious ? "SUSPICIOUS_USAGE_LOCKED" : "SCAN_FAILED");
     }
